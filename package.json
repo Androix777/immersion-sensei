@@ -1,0 +1,19 @@
+{
+    "name": "immersion-sensei",
+    "version": "0.0.1",
+    "description": "immersion-sensei",
+    "author": {
+        "name": "Androix777"
+    },
+    "main": "build/index.js",
+    "scripts": {
+        "compile": "tsc && copyfiles -f src/index.html build",
+        "start": "npm run compile && electron ."
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "copyfiles": "^2.4.1",
+        "electron": "^15.0.0",
+        "typescript": "^4.4.3"
+    }
+}
