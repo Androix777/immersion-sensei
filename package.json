@@ -10,7 +10,10 @@
         "compile": "tsc && copyfiles -f src/index.html build",
         "start": "npm run compile && electron ."
     },
-    "dependencies": {},
+    "dependencies": {
+        "@types/d3": "^7.4.0",
+        "d3": "^7.4.5"
+    },
     "devDependencies": {
         "copyfiles": "^2.4.1",
         "electron": "^15.0.0",
