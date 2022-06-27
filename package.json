@@ -5,9 +5,9 @@
     "author": {
         "name": "Androix777"
     },
-    "main": "build/index.js",
+    "main": "build/main.js",
     "scripts": {
-        "compile": "tsc && copyfiles -f src/index.html build",
+        "compile": "tsc && copyfiles -f src/front/index.html build/front",
         "start": "npm run compile && electron ."
     },
     "dependencies": {
