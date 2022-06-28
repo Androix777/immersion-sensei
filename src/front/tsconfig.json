@@ -1,0 +1,10 @@
+{
+    "compilerOptions": 
+    {
+        "target": "es5",
+        "module": "esnext",
+        "outDir": "../../build/front",
+        "strict": true,
+        "esModuleInterop": true
+    }
+}

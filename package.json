@@ -7,7 +7,7 @@
     },
     "main": "build/core/main.js",
     "scripts": {
-        "compile": "tsc && copyfiles -f src/front/index.html build/front",
+        "compile": "tsc && tsc -p src/front/tsconfig.json && copyfiles -f src/front/index.html build/front",
         "start": "npm run compile && electron ."
     },
     "dependencies": {

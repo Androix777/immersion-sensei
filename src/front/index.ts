@@ -1,3 +1,12 @@
+import {test} from './test.js'
+
+declare global
+{
+    interface Window 
+    {
+        api: any;
+    }
+}
 
 let form = document.querySelector("form")
 let input = document.querySelector("input")
@@ -15,6 +24,7 @@ function submit(event : SubmitEvent)
     let responseText = window.api.getDatabase(command)
     input!.value = ""
     let response = document.createElement("div")
+    responseText = test(responseText);
     response.textContent = responseText
     responses?.appendChild(response)
 }

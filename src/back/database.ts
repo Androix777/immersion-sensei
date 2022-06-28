@@ -2,6 +2,6 @@ export class database
 {
     public static getData(data : string)
     {
-        return data + "asdasd"
+        return data + "(backend)"
     }
 }
