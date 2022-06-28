@@ -1,20 +1,12 @@
-import { BrowserWindow, app } from 'electron';
+const { BrowserWindow, app } = require('electron');
 
-declare global
+class Main 
 {
-    interface Window 
-    {
-        api: any;
-    }
-}
+    static mainWindow;
+    static application;
+    static BrowserWindow;
 
-export default class Main 
-{
-    static mainWindow: Electron.BrowserWindow | null;
-    static application: Electron.App;
-    static BrowserWindow: any;
-
-    static main(app: Electron.App, browserWindow: typeof BrowserWindow) 
+    static main(app, browserWindow) 
     {
         Main.BrowserWindow = browserWindow;
         Main.application = app;
@@ -22,7 +14,7 @@ export default class Main
         Main.application.on('ready', Main.onReady);
     }
     
-    private static onWindowAllClosed() 
+    static onWindowAllClosed() 
     {
         if (process.platform !== 'darwin') 
         {
@@ -31,7 +23,7 @@ export default class Main
     }
 
 
-    private static onReady() 
+    static onReady() 
     {
         Main.mainWindow = new Main.BrowserWindow
         (
@@ -42,11 +34,11 @@ export default class Main
                 }
             }
         );
-        Main.mainWindow!.loadURL('file://' + __dirname + '/../front/index.html');
-        Main.mainWindow!.on('closed', Main.onClose);
+        Main.mainWindow.loadURL('file://' + __dirname + '/../front/index.html');
+        Main.mainWindow.on('closed', Main.onClose);
     }
 
-    private static onClose() 
+    static onClose() 
     {
         // Dereference the window object. 
         Main.mainWindow = null;

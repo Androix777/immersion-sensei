@@ -5,10 +5,9 @@
     "author": {
         "name": "Androix777"
     },
-    "main": "build/core/main.js",
+    "main": "src/core/main.js",
     "scripts": {
-        "compile": "tsc && tsc -p src/front/tsconfig.json && copyfiles -f src/front/index.html build/front",
-        "start": "npm run compile && electron ."
+        "start": "npm run && electron ."
     },
     "dependencies": {
         "@types/d3": "^7.4.0",
