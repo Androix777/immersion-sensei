@@ -1,5 +1,13 @@
 import { BrowserWindow, app } from 'electron';
 
+declare global
+{
+    interface Window 
+    {
+        api: any;
+    }
+}
+
 export default class Main 
 {
     static mainWindow: Electron.BrowserWindow | null;
@@ -34,7 +42,7 @@ export default class Main
                 }
             }
         );
-        Main.mainWindow!.loadURL('file://' + __dirname + '/front/index.html');
+        Main.mainWindow!.loadURL('file://' + __dirname + '/../front/index.html');
         Main.mainWindow!.on('closed', Main.onClose);
     }
 

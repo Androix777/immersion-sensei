@@ -1,7 +1,5 @@
-let child_process = require("child_process")
-let { contextBridge } = require("electron")
-
-let { database } = require("./back/database")
+import { contextBridge } from "electron"
+import { database } from "../back/database"
 
 
 function getDatabase (data : string)  

@@ -5,7 +5,7 @@
     "author": {
         "name": "Androix777"
     },
-    "main": "build/main.js",
+    "main": "build/core/main.js",
     "scripts": {
         "compile": "tsc && copyfiles -f src/front/index.html build/front",
         "start": "npm run compile && electron ."
