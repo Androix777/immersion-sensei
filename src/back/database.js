@@ -1,8 +1,24 @@
 class database
 {
-    static getData(data)
+    static knex = undefined;
+
+    static async connect()
     {
-        return data + "(backend)"
+        database.knex = require('knex')
+        (
+            {
+                client: 'sqlite3',
+                connection: 
+                {
+                    filename: "./immersion.sqlite"
+                }
+            }
+        );
+        
+    }
+    static async query(input)
+    {
+        console.log(await database.knex.raw(input));
     }
 }
 
