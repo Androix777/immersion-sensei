@@ -12,14 +12,15 @@ form.addEventListener
     "submit", submit
 )
 
-function submit(event)
+async function submit(event)
 {
     event.preventDefault()
     let command = input?.value
-    let responseText = window.api.queryDatabase(command)
+    let responseText = await window.api.queryDatabase(command)
+    responseText = JSON.stringify(responseText)
     input.value = ""
     let response = document.createElement("div")
-    responseText = test(responseText);
+    responseText = test(responseText)
     response.textContent = responseText
     responses?.appendChild(response)
 }

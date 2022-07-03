@@ -5,7 +5,7 @@ class database
 
     static rootPath = process.env.INIT_CWD
     static defaultDBPath = "./user_data/immersion.sqlite"
-    static defaultSchemaPath = "./src/back/db/immersion.db.sql"
+    static defaultTemplatePath = "./src/back/db/immersion.sqlite"
     static knex = undefined;
 
 
@@ -24,12 +24,11 @@ class database
 
     static async createAndConnect()
     {
-        database.connect()
-
-        let sql = database.fs.readFileSync(database.path.join(database.rootPath, database.defaultSchemaPath), "utf8");
-        console.log(sql)
+        database.fs.copyFile(database.path.join(database.rootPath, database.defaultTemplatePath), database.path.join(database.rootPath, database.defaultDBPath), 
+            (err) => { if (err) throw err; });
         
-        console.log(database.query(sql))
+        database.connect();
+        
     }
 
     static async connect()
@@ -50,7 +49,9 @@ class database
 
     static async query(input)
     {
-        return await database.knex.raw(input);
+        let response = await database.knex.raw(input);
+        console.log(response)
+        return response
     }
 }
 

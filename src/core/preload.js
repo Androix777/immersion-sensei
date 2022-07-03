@@ -7,11 +7,11 @@ function tryConnect()
     database.tryConnect();
 }
 
-function queryDatabase(input)  
+async function queryDatabase(input)  
 {
-    var promise = database.query(input);
-    console.log(promise);
-    return promise;
+    let response = await database.query(input);
+    console.log(response);
+    return response;
 }
 
 contextBridge.exposeInMainWorld
