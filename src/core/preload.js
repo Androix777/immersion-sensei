@@ -2,17 +2,19 @@ const { contextBridge } = require("electron");
 const { database } = require("../back/database")
 
 
-function connect()  
+function tryConnect()
 {
-    database.connect();
+    database.tryConnect();
 }
 
 function queryDatabase(input)  
 {
-    return database.query(input);
+    var promise = database.query(input);
+    console.log(promise);
+    return promise;
 }
 
 contextBridge.exposeInMainWorld
 (
-    "api", { connect, queryDatabase }
+    "api", { tryConnect, queryDatabase }
 )

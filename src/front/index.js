@@ -5,7 +5,7 @@ let input = document.querySelector("input")
 let responses = document.querySelector("#responses")
 
 testChart();
-window.api.connect();
+window.api.tryConnect();
 
 form.addEventListener
 (
