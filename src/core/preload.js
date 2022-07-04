@@ -10,11 +10,16 @@ function tryConnect()
 async function queryDatabase(input)  
 {
     let response = await database.query(input);
-    console.log(response);
+    return response;
+}
+
+async function getImmersions(count)  
+{
+    let response = await database.getImmersions(count);
     return response;
 }
 
 contextBridge.exposeInMainWorld
 (
-    "api", { tryConnect, queryDatabase }
+    "api", { tryConnect, queryDatabase, getImmersions }
 )

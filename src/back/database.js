@@ -50,7 +50,16 @@ class database
     static async query(input)
     {
         let response = await database.knex.raw(input);
-        console.log(response)
+        return response
+    }
+
+    static async getImmersions(count)
+    {
+        let response = await database.knex
+            .from("immersions")
+            .select("id", "date", "time", "characters")
+            .orderBy('date', 'desc')
+            .limit(count)
         return response
     }
 }
