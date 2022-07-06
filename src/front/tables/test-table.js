@@ -122,7 +122,23 @@ var durationEditor = function(cell, onRendered, success, cancel){
     input.style.boxSizing = "border-box";
 
     input.value = cellValue;
-    
+    Inputmask({
+        "mask": "9{1,2}:9{1,2}:9{1,2}",
+        placeholder: " ",
+        onBeforeWrite: function (event, buffer, caretPos, opts) 
+        {
+                if(["checkval", "_checkval"].includes(event.type)) 
+            {
+                return
+            }
+            //console.log(event, buffer, caretPos, opts);
+            console.log(event.type);
+            console.log(buffer);
+            console.log(caretPos);
+            console.log(buffer.join('').match(/(\d*):(\d*):(\d*)/));
+        }
+      }).mask(input);
+    /*
     var durationMask = IMask(input, {
         mask: 'HH:MM:SS',
         lazy: false,  // make placeholder always visible
@@ -131,34 +147,31 @@ var durationEditor = function(cell, onRendered, success, cancel){
         {
             HH: 
             {
-                mask: Number,
-                scale: 0,
-                signed: false,
-                min: 0,
-                max: 10000
+                mask: IMask.MaskedRange,
+                from: 0,
+                to: 23,
+                maxLength: 1,
 
             },
       
             MM: 
             {
-                mask: Number,
-                scale: 0,
-                signed: false,
-                min: 0,
-                max: 59
+                mask: IMask.MaskedRange,
+                from: 0,
+                to: 59,
+                maxLength: 1,
             },
       
             SS: 
             {
-                mask: Number,
-                scale: 0,
-                signed: false,
-                min: 0,
-                max: 59
+                mask: IMask.MaskedRange,
+                from: 0,
+                to: 59,
+                maxLength: 1,
             }
         }
       });
-
+      */
     onRendered(function(){
         input.focus();
         input.style.height = "100%";
@@ -166,6 +179,7 @@ var durationEditor = function(cell, onRendered, success, cancel){
 
     function onChange(){
         if(input.value != cellValue){
+            console.log(input.value);
             success(convertFromDuration(input.value));
         }else{
             cancel();
@@ -283,8 +297,6 @@ function convertToDuration(value)
 
 function convertFromDuration(value)
 {
-    console.log(value)
     var duration = value.match(/(\d+):(\d+):(\d+)/);
-    console.log(duration)
     return (Duration.fromObject({hours:duration[1], minutes:duration[2], seconds:duration[3]}).toMillis() / 1000)
 }
