@@ -13,13 +13,19 @@ async function queryDatabase(input)
     return response;
 }
 
-async function getImmersions(count)  
+async function getImmersions()  
 {
-    let response = await database.getImmersions(count);
+    let response = await database.getImmersions();
+    return response;
+}
+
+async function deleteImmersion(id)  
+{
+    let response = await database.deleteImmersion(id);
     return response;
 }
 
 contextBridge.exposeInMainWorld
 (
-    "api", { tryConnect, queryDatabase, getImmersions }
+    "api", { tryConnect, queryDatabase, getImmersions, deleteImmersion }
 )

@@ -53,13 +53,20 @@ class database
         return response
     }
 
-    static async getImmersions(count)
+    static async getImmersions()
     {
         let response = await database.knex
             .from("immersions")
             .select("id", "date", "time", "characters")
-            .orderBy('date', 'desc')
-            .limit(count)
+        return response
+    }
+
+    static async deleteImmersion(id)
+    {
+        let response = await database.knex
+            .from("immersions")
+            .where({ id: id })
+            .del()
         return response
     }
 }

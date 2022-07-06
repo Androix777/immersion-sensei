@@ -1,5 +1,3 @@
-//import * as d3 from "../../node_modules/d3/src/index.js";
-
 export function test(input)
 {
     return input + "(frontend)";

@@ -11,15 +11,21 @@
           fill: orange;
         }
     </style>
+    <link rel="stylesheet" href="../../node_modules/tabulator-tables/dist/css/tabulator_modern.min.css">
 </head>
 
 <body>
     <script src="../../node_modules/d3/dist/d3.js"></script>
+    <script src="../../node_modules/tabulator-tables/dist/js/tabulator.js"></script>
+    <script src="../../node_modules/luxon/build/global/luxon.min.js"></script>
+    <script src="../../node_modules/inputmask/dist/inputmask.js"></script>
+    <script src="../../node_modules/imask/dist/imask.js"></script>
     <h1>Immersion sensei</h1>
     <form>
         <input type="text" autofocus />
     </form>
     <div id="responses"></div>
+    <div id="example-table"></div>
     <script type="module" src="index.js"></script>
 </body>
 
