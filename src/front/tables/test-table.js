@@ -136,18 +136,25 @@ var durationEditor = function(cell, onRendered, success, cancel){
             cancel();
         }
     }
-    var cache = input.value
+    let originalString = input.value
+
     input.addEventListener("input", function(event)
     {
         
         console.log(event);
-        console.log(cache + " -> " + event.target.value);
-        if(event.target.value.split(":").length - 1 != 2)
-        {
-            event.target.value = cache
-        }
-        cache = event.target.value
+        console.log(originalString + " -> " + event.target.value);
+        let changes = getChanges(event, originalString)
+        event.target.value = fixDurationString(changes, originalString, event.target.value)
+
+        originalString = event.target.value
+        event.target.selectionStart = changes.position
+        event.target.selectionEnd = changes.position
     });
+
+    input.addEventListener("select", (event) =>
+    {
+        console.log(event)
+    })
 
     //submit new value on blur or change
     input.addEventListener("blur", onChange);
@@ -264,7 +271,39 @@ function convertFromDuration(value)
     return (Duration.fromObject({hours:duration[1], minutes:duration[2], seconds:duration[3]}).toMillis() / 1000)
 }
 
-function getChange(event, originalString)
+function getChanges(event, originalString)
 {
-    
+    let position
+    let deletedString
+    let isValid = true
+
+    if(["deleteContentBackward", "deleteContentForward", "deleteByCut"].includes(event.inputType))
+    {
+        position = event.target.selectionStart
+        let lenDiff = originalString.length - event.target.value.length
+        deletedString = originalString.slice(position, position + lenDiff)
+    }
+    else
+    {
+        isValid = false
+    }
+
+    return {
+        position: position,
+        deletedString: deletedString,
+        isValid: isValid
+    }
+}
+
+function fixDurationString(durationChanges, originalString, newString)
+{
+    if(!durationChanges.isValid)
+    {
+        return originalString
+    }
+    let fixedDeleted = durationChanges.deletedString.replace(/[^:*]/g, '');
+    console.log(fixedDeleted)
+    let fixedString = [newString.slice(0, durationChanges.position), fixedDeleted, newString.slice(durationChanges.position)].join('')
+    return fixedString
+
 }
