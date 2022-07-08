@@ -122,56 +122,7 @@ var durationEditor = function(cell, onRendered, success, cancel){
     input.style.boxSizing = "border-box";
 
     input.value = cellValue;
-    Inputmask({
-        "mask": "9{1,2}:9{1,2}:9{1,2}",
-        placeholder: " ",
-        onBeforeWrite: function (event, buffer, caretPos, opts) 
-        {
-                if(["checkval", "_checkval"].includes(event.type)) 
-            {
-                return
-            }
-            //console.log(event, buffer, caretPos, opts);
-            console.log(event.type);
-            console.log(buffer);
-            console.log(caretPos);
-            console.log(buffer.join('').match(/(\d*):(\d*):(\d*)/));
-        }
-      }).mask(input);
-    /*
-    var durationMask = IMask(input, {
-        mask: 'HH:MM:SS',
-        lazy: false,  // make placeholder always visible
-      
-        blocks: 
-        {
-            HH: 
-            {
-                mask: IMask.MaskedRange,
-                from: 0,
-                to: 23,
-                maxLength: 1,
-
-            },
-      
-            MM: 
-            {
-                mask: IMask.MaskedRange,
-                from: 0,
-                to: 59,
-                maxLength: 1,
-            },
-      
-            SS: 
-            {
-                mask: IMask.MaskedRange,
-                from: 0,
-                to: 59,
-                maxLength: 1,
-            }
-        }
-      });
-      */
+    
     onRendered(function(){
         input.focus();
         input.style.height = "100%";
@@ -185,6 +136,18 @@ var durationEditor = function(cell, onRendered, success, cancel){
             cancel();
         }
     }
+    var cache = input.value
+    input.addEventListener("input", function(event)
+    {
+        
+        console.log(event);
+        console.log(cache + " -> " + event.target.value);
+        if(event.target.value.split(":").length - 1 != 2)
+        {
+            event.target.value = cache
+        }
+        cache = event.target.value
+    });
 
     //submit new value on blur or change
     input.addEventListener("blur", onChange);
@@ -299,4 +262,9 @@ function convertFromDuration(value)
 {
     var duration = value.match(/(\d+):(\d+):(\d+)/);
     return (Duration.fromObject({hours:duration[1], minutes:duration[2], seconds:duration[3]}).toMillis() / 1000)
+}
+
+function getChange(event, originalString)
+{
+    
 }
