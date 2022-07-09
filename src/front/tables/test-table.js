@@ -146,6 +146,12 @@ var durationEditor = function(cell, onRendered, success, cancel)
         selectValueIndex(0)
     })
 
+    input.addEventListener("compositionstart", (event) =>
+    {
+        input.blur();
+        console.log("Tried to use IME")
+    })
+
     input.addEventListener("mousedown", (event) =>
     {
         event.preventDefault();
@@ -311,8 +317,9 @@ var durationEditor = function(cell, onRendered, success, cancel)
         var currentValue = getCurrentValue()
 
         if(inputType != "insertText") return
-        if(newValue == "undefined") return
+        if(isNaN(newValue)) return
         if(newValue < 0 || newValue > 9) return
+
         
         if(isChanging)
         {
@@ -337,7 +344,7 @@ var durationEditor = function(cell, onRendered, success, cancel)
         {
             // добавить проверку на меньше 9
             setValue(currentValueIndex, newValue)
-            if (newValue * 10 > maxValues[currentValueIndex])
+            if (newValue * 10 > maxValues[currentValueIndex] || newValue == 0)
             {
                 isChanging = false
                 selectValueIndex(currentValueIndex + 1)
