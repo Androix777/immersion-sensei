@@ -2,6 +2,7 @@ class database
 {
     static fs = require('fs');
     static path = require('path');
+    static luxon = require('luxon');
 
     static rootPath = process.env.INIT_CWD
     static defaultDBPath = "./user_data/immersion.sqlite"
@@ -59,6 +60,40 @@ class database
             .from("immersions")
             .select("id", "date", "time", "characters")
         return response
+    }
+
+    static async getImmersion(id)
+    {
+        let response = await database.knex
+            .from("immersions")
+            .select("id", "date", "time", "characters")
+            .where('id', '=', id)
+        return response
+    }
+
+    static async addImmersion()
+    {
+        let response = await database.knex
+            .from("immersions")
+            .insert(
+            {
+                //id: undefined,
+                //date:'2000-01-01'
+                date: database.luxon.DateTime.now().toFormat('yyyy-LL-dd')
+                //time:
+                //characters:
+            })
+            .returning('id')
+        return response;
+    }
+
+    static async changeImmersion(id, column, value)
+    {
+        let response = await database.knex
+            .from("immersions")
+            .where('id', '=', id)
+            .update(column, value);
+            return response
     }
 
     static async deleteImmersion(id)

@@ -19,6 +19,24 @@ async function getImmersions()
     return response;
 }
 
+async function getImmersion(id)
+{
+    let response = await database.getImmersion(id);
+    return response;
+}
+
+async function addImmersion()  
+{
+    let response = await database.addImmersion();
+    return response;
+}
+
+async function changeImmersion(id, column, value)  
+{
+    let response = await database.changeImmersion(id, column, value);
+    return response;
+}
+
 async function deleteImmersion(id)  
 {
     let response = await database.deleteImmersion(id);
@@ -27,5 +45,5 @@ async function deleteImmersion(id)
 
 contextBridge.exposeInMainWorld
 (
-    "api", { tryConnect, queryDatabase, getImmersions, deleteImmersion }
+    "api", { tryConnect, queryDatabase, getImmersions, getImmersion, deleteImmersion, changeImmersion, addImmersion }
 )

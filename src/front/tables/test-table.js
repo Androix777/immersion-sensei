@@ -2,8 +2,30 @@ import { durationEditor, durationFormatter } from "./tabulator-custom/duration.j
 import { minMaxFilterEditor, minMaxFilterFunction } from "./tabulator-custom/minMaxFilter.js";
 import { dateEditor } from "./tabulator-custom/date.js";
 
-export function createTable(tableData)
+export function createTable(tableData, onAddRow = undefined)
 {
+    var rowMenu = 
+    [
+        {
+            label:"<i class='fas fa-trash'></i> Add Row",
+            action:function(e, row)
+            {
+                if (onAddRow)
+                {
+                    onAddRow();
+                    console.log('test-table');
+                }
+            }
+        },
+        {
+            label:"<i class='fas fa-trash'></i> Delete Row",
+            action:function(e, row)
+            {
+                row.delete();
+            }
+        }
+    ];
+
     var table = new Tabulator("#example-table", 
     {
         layout:"fitColumns",
@@ -52,15 +74,7 @@ export function createTable(tableData)
             },
         ],
     });
+
     return table;
 }
 
-let rowMenu = 
-[
-    {
-        label:"<i class='fas fa-trash'></i> Delete Row",
-        action:function(e, row){
-            row.delete();
-        }
-    }
-]
