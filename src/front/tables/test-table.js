@@ -26,6 +26,21 @@ export function createTable(tableData, onAddRow = undefined)
         }
     ];
 
+    var headerIDMenu = 
+    [
+        {
+            label:"<i class='fas fa-trash'></i> Add Row",
+            action:function(e, column)
+            {
+                if (onAddRow)
+                {
+                    onAddRow();
+                    console.log('test-table');
+                }
+            }
+        },
+    ];
+
     var table = new Tabulator("#example-table", 
     {
         layout:"fitColumns",
@@ -40,7 +55,8 @@ export function createTable(tableData, onAddRow = undefined)
         [
             {
                 title:"ID", 
-                field:"id"
+                field:"id",
+                headerContextMenu: headerIDMenu,
             },
             {
                 title:"Date", 
@@ -70,7 +86,16 @@ export function createTable(tableData, onAddRow = undefined)
                 },
                 headerFilter:minMaxFilterEditor, 
                 headerFilterFunc:minMaxFilterFunction, 
-                headerFilterLiveFilter:false
+                headerFilterLiveFilter:false,
+            },
+            {
+                title:"Text", 
+                field:"text", 
+                formatter:"tickCross",
+                mutator:function(value, data) 
+                {
+                    return data.text_of_immersion_id != null;
+                }
             },
         ],
     });

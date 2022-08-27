@@ -58,7 +58,7 @@ class database
     {
         let response = await database.knex
             .from("immersions")
-            .select("id", "date", "time", "characters")
+            .select("id", "date", "time", "characters", "text_of_immersion_id")
         return response
     }
 
@@ -66,7 +66,7 @@ class database
     {
         let response = await database.knex
             .from("immersions")
-            .select("id", "date", "time", "characters")
+            .select("id", "date", "time", "characters", "text_of_immersion_id")
             .where('id', '=', id)
         return response
     }
@@ -77,11 +77,7 @@ class database
             .from("immersions")
             .insert(
             {
-                //id: undefined,
-                //date:'2000-01-01'
                 date: database.luxon.DateTime.now().toFormat('yyyy-LL-dd')
-                //time:
-                //characters:
             })
             .returning('id')
         return response;
