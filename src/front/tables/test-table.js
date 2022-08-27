@@ -2,7 +2,7 @@ import { durationEditor, durationFormatter } from "./tabulator-custom/duration.j
 import { minMaxFilterEditor, minMaxFilterFunction } from "./tabulator-custom/minMaxFilter.js";
 import { dateEditor } from "./tabulator-custom/date.js";
 
-export function createTable(tableData, onAddRow = undefined)
+export function createTable(tableData, onTryAddRow = undefined, onTryDeleteRow = undefined)
 {
     var rowMenu = 
     [
@@ -10,9 +10,9 @@ export function createTable(tableData, onAddRow = undefined)
             label:"<i class='fas fa-trash'></i> Add Row",
             action:function(e, row)
             {
-                if (onAddRow)
+                if (onTryAddRow)
                 {
-                    onAddRow();
+                    onTryAddRow();
                 }
             }
         },
@@ -20,7 +20,10 @@ export function createTable(tableData, onAddRow = undefined)
             label:"<i class='fas fa-trash'></i> Delete Row",
             action:function(e, row)
             {
-                row.delete();
+                if (onTryDeleteRow)
+                {
+                    onTryDeleteRow(row);
+                }
             }
         }
     ];
@@ -31,9 +34,9 @@ export function createTable(tableData, onAddRow = undefined)
             label:"<i class='fas fa-trash'></i> Add Row",
             action:function(e, column)
             {
-                if (onAddRow)
+                if (onTryAddRow)
                 {
-                    onAddRow();
+                    onTryAddRow();
                 }
             }
         },

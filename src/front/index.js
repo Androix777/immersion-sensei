@@ -21,21 +21,23 @@ async function showImmersions()
     Notiflix.Loading.dots();
 
     var response = await window.api.getImmersions()
-    var table = createTable(response, onAddRow)
+    var table = createTable(response, onTryAddRow, onTryDeleteRow)
 
     table.on("rowDeleted", (row) =>
     {
         window.api.deleteImmersion(row._row.data.id)
     });
 
-    table.on("cellEdited", (event) =>
+    table.on("cellEdited", async (event) =>
     {
         var id = event._cell.row.data.id;
         var column = event._cell.column.field;
         var value = event._cell.value;
 
-        var response = window.api.changeImmersion(id, column, value);
-
+        var response = await window.api.changeImmersion(id, column, value);
+        
+        if(response == 0) Notiflix.Notify.failure('Not changed') 
+        else Notiflix.Notify.success('Changed');
     });
 
     table.on("tableBuilt", (event) =>
@@ -44,7 +46,7 @@ async function showImmersions()
         Notiflix.Loading.remove(1000);
     });
 
-    async function onAddRow()
+    async function onTryAddRow()
     {
         var response = await window.api.addImmersion();
         if(response)
@@ -52,6 +54,21 @@ async function showImmersions()
             response = await window.api.getImmersion(response[0]);
             table.addData([response[0]], false);
         }
+    }
+
+    async function onTryDeleteRow(row)
+    {
+        Notiflix.Confirm.show(
+            'Warning',
+            'Delete row?',
+            'Yes',
+            'No',
+            function okCb() 
+            {
+                row.delete();
+            },
+            function cancelCb() {},
+          );
     }
 }
 
