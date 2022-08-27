@@ -13,7 +13,6 @@ export function createTable(tableData, onAddRow = undefined)
                 if (onAddRow)
                 {
                     onAddRow();
-                    console.log('test-table');
                 }
             }
         },
@@ -35,7 +34,6 @@ export function createTable(tableData, onAddRow = undefined)
                 if (onAddRow)
                 {
                     onAddRow();
-                    console.log('test-table');
                 }
             }
         },
@@ -92,6 +90,7 @@ export function createTable(tableData, onAddRow = undefined)
                 title:"Text", 
                 field:"text", 
                 formatter:"tickCross",
+                width:100,
                 mutator:function(value, data) 
                 {
                     return data.text_of_immersion_id != null;

@@ -18,12 +18,13 @@ form.addEventListener
 
 async function showImmersions()
 {
+    Notiflix.Loading.dots();
+
     var response = await window.api.getImmersions()
     var table = createTable(response, onAddRow)
 
     table.on("rowDeleted", (row) =>
     {
-        console.log(row._row.data.id)
         window.api.deleteImmersion(row._row.data.id)
     });
 
@@ -34,8 +35,13 @@ async function showImmersions()
         var value = event._cell.value;
 
         var response = window.api.changeImmersion(id, column, value);
-        console.log(response);
 
+    });
+
+    table.on("tableBuilt", (event) =>
+    {
+        console.log("tableBuilt");
+        Notiflix.Loading.remove(1000);
     });
 
     async function onAddRow()
@@ -46,7 +52,6 @@ async function showImmersions()
             response = await window.api.getImmersion(response[0]);
             table.addData([response[0]], false);
         }
-        console.log(response[0]);
     }
 }
 
