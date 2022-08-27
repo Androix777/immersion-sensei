@@ -2,7 +2,7 @@ import { durationEditor, durationFormatter } from "./tabulator-custom/duration.j
 import { minMaxFilterEditor, minMaxFilterFunction } from "./tabulator-custom/minMaxFilter.js";
 import { dateEditor } from "./tabulator-custom/date.js";
 
-export function createTable(tableData, onTryAddRow = undefined, onTryDeleteRow = undefined)
+export function createTable(tableData, onTryAddRow = undefined, onTryDeleteRow = undefined, onImmersionTextClick = undefined)
 {
     var rowMenu = 
     [
@@ -91,13 +91,14 @@ export function createTable(tableData, onTryAddRow = undefined, onTryDeleteRow =
             },
             {
                 title:"Text", 
-                field:"text", 
+                field:"text_of_immersion", 
                 formatter:"tickCross",
                 width:100,
                 mutator:function(value, data) 
                 {
                     return data.text_of_immersion_id != null;
-                }
+                },
+                cellClick: onImmersionTextClick,
             },
         ],
     });

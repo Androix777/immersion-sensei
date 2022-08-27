@@ -21,7 +21,7 @@ async function showImmersions()
     Notiflix.Loading.dots();
 
     var response = await window.api.getImmersions()
-    var table = createTable(response, onTryAddRow, onTryDeleteRow)
+    var table = createTable(response, onTryAddRow, onTryDeleteRow, onImmersionTextClick)
 
     table.on("rowDeleted", async (row) =>
     {
@@ -38,9 +38,9 @@ async function showImmersions()
 
     table.on("cellEdited", async (cell) =>
     {
-        var id = cell._cell.row.data.id;
-        var column = cell._cell.column.field;
-        var value = cell._cell.value;
+        var id = cell.getData().id;
+        var column = cell.getColumn().getField();
+        var value = cell.getValue();
 
         var response = await window.api.changeImmersion(id, column, value);
 
@@ -95,6 +95,18 @@ async function showImmersions()
             },
             () => {},
           );
+    }
+
+    function onImmersionTextClick(e, cell)
+    {
+        if(cell.getValue() == false)
+        {
+            Notiflix.Notify.warning(`NOT IMPLEMENTED FOR No text in ${cell.getData().id}`, notifyOptions);
+        }
+        else
+        {
+            Notiflix.Notify.warning(`NOT IMPLEMENTED FOR Text in ${cell.getData().id}`, notifyOptions);
+        }
     }
 
     var notifyOptions = 
