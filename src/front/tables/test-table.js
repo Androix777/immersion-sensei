@@ -76,6 +76,8 @@ export function createTable(tableData, onTryAddRow = undefined, onTryDeleteRow =
                 field:"time", 
                 formatter: durationFormatter,
                 editor: durationEditor, 
+                bottomCalc:"sum",
+                bottomCalcFormatter: durationFormatter, 
             },
             {
                 title:"Characters", 
@@ -88,6 +90,7 @@ export function createTable(tableData, onTryAddRow = undefined, onTryDeleteRow =
                 headerFilter:minMaxFilterEditor, 
                 headerFilterFunc:minMaxFilterFunction, 
                 headerFilterLiveFilter:false,
+                bottomCalc:"sum",
             },
             {
                 title:"Text", 
