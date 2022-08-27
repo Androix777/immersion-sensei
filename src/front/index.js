@@ -23,36 +23,62 @@ async function showImmersions()
     var response = await window.api.getImmersions()
     var table = createTable(response, onTryAddRow, onTryDeleteRow)
 
-    table.on("rowDeleted", (row) =>
+    table.on("rowDeleted", async (row) =>
     {
-        window.api.deleteImmersion(row._row.data.id)
+        var response = await window.api.deleteImmersion(row._row.data.id)
+        if(response == 0) 
+        {
+            Notiflix.Notify.failure('Not deleted', notifyOptions); 
+        }
+        else 
+        {
+            Notiflix.Notify.success('Row deleted', notifyOptions);
+        }
     });
 
-    table.on("cellEdited", async (event) =>
+    table.on("cellEdited", async (cell) =>
     {
-        var id = event._cell.row.data.id;
-        var column = event._cell.column.field;
-        var value = event._cell.value;
+        var id = cell._cell.row.data.id;
+        var column = cell._cell.column.field;
+        var value = cell._cell.value;
 
         var response = await window.api.changeImmersion(id, column, value);
-        
-        if(response == 0) Notiflix.Notify.failure('Not changed') 
-        else Notiflix.Notify.success('Changed');
+
+        if(response == 0) 
+        {
+            Notiflix.Notify.failure('Not changed', notifyOptions); 
+            cell.restoreOldValue();
+        }
+        else 
+        {
+            Notiflix.Notify.success('Cell changed', notifyOptions);
+        }
     });
 
     table.on("tableBuilt", (event) =>
     {
-        console.log("tableBuilt");
         Notiflix.Loading.remove(1000);
     });
 
     async function onTryAddRow()
     {
         var response = await window.api.addImmersion();
-        if(response)
+        if(response != 0)
         {
             response = await window.api.getImmersion(response[0]);
-            table.addData([response[0]], false);
+            if(response == 0) 
+            {
+                Notiflix.Notify.failure('Not added', notifyOptions); 
+            }
+            else 
+            {
+                Notiflix.Notify.success('Row added', notifyOptions);
+                table.addData([response[0]], false);
+            }
+        }
+        else
+        {
+            Notiflix.Notify.failure('Not added', notifyOptions); 
         }
     }
 
@@ -63,12 +89,18 @@ async function showImmersions()
             'Delete row?',
             'Yes',
             'No',
-            function okCb() 
+            () =>
             {
                 row.delete();
             },
-            function cancelCb() {},
+            () => {},
           );
+    }
+
+    var notifyOptions = 
+    {
+        timeout: 1000, 
+        position: "right-bottom",
     }
 }
 
