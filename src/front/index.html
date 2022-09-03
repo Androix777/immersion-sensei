@@ -11,6 +11,7 @@
           fill: orange;
         }
     </style>
+    <link rel="stylesheet" href="./styles/index.css">
     <link rel="stylesheet" href="../../node_modules/tabulator-tables/dist/css/tabulator_modern.min.css">
     <link rel="stylesheet" href="../../node_modules/notiflix/src/notiflix.css">
 </head>
@@ -20,14 +21,21 @@
     <script src="../../node_modules/tabulator-tables/dist/js/tabulator.js"></script>
     <script src="../../node_modules/luxon/build/global/luxon.min.js"></script>
     <script src="../../node_modules/notiflix/src/notiflix.js"></script>
-    <button onclick = "window.location.reload()">Reload</button>
-    <h1>Immersion sensei</h1>
-    <form>
-        <input type="text" autofocus />
-    </form>
-    <div id="responses"></div>
-    <div id="example-table"></div>
-    <script type="module" src="index.js"></script>
+    <div class="main">
+        <div class="sidenav">
+            <a href="#">Immersions</a>
+            <a href="#">Works</a>
+        </div>
+
+        <button onclick = "window.location.reload()">Reload</button>
+        <h1>Immersion sensei</h1>
+        <form>
+            <input type="text" autofocus />
+        </form>
+        <div id="responses"></div>
+        <div id="example-table"></div>
+        <script type="module" src="index.js"></script>
+    </div>
 </body>
 
 </html>

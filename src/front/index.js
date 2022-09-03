@@ -23,19 +23,6 @@ async function showImmersions()
     var response = await window.api.getImmersions()
     var table = createTable(response, onTryAddRow, onTryDeleteRow, onImmersionTextClick)
 
-    table.on("rowDeleted", async (row) =>
-    {
-        var response = await window.api.deleteImmersion(row._row.data.id)
-        if(response == 0) 
-        {
-            Notiflix.Notify.failure('Not deleted', notifyOptions); 
-        }
-        else 
-        {
-            Notiflix.Notify.success('Row deleted', notifyOptions);
-        }
-    });
-
     table.on("cellEdited", async (cell) =>
     {
         var id = cell.getData().id;
@@ -89,9 +76,18 @@ async function showImmersions()
             'Delete row?',
             'Yes',
             'No',
-            () =>
+            async () =>
             {
-                row.delete();
+                var response = await window.api.deleteImmersion(row._row.data.id)
+                if(response == 0) 
+                {
+                    Notiflix.Notify.failure('Not deleted', notifyOptions); 
+                }
+                else 
+                {
+                    Notiflix.Notify.success('Row deleted', notifyOptions);
+                    row.delete();
+                }
             },
             () => {},
           );

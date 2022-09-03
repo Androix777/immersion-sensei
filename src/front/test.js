@@ -1,13 +1,8 @@
-export function test(input)
-{
-    return input + "(frontend)";
-}
-
 export function testChart()
 {
     var data = [150, 230, 180, 90];
 
-    var svg = d3.select("body")
+    var svg = d3.select(".main")
         .append("svg")
         .attr("width", 300)
         .attr("height", 200);
