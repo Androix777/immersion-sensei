@@ -1,13 +1,15 @@
 import {testChart} from './test.js'
 import {createTable} from './tables/test-table.js'
 
-let form = document.querySelector("form")
-let input = document.querySelector("input")
-let responses = document.querySelector("#responses")
+var form = document.querySelector("form")
+var input = document.querySelector("input")
+var responses = document.querySelector("#responses")
+var tabContents = document.getElementsByClassName("tabcontent");
 
-testChart();
+//testChart();
 window.api.tryConnect();
 showImmersions()
+createTabLinks()
 
 
 form.addEventListener
@@ -15,6 +17,31 @@ form.addEventListener
     "submit", submit
 )
 
+function createTabLinks()
+{
+    for (let i = 0; i < tabContents.length; i++)
+    {
+        const tabLink = document.createElement("a");
+        let id = tabContents[i].getAttribute("id");
+        tabLink.setAttribute("class", "tablink");
+        tabLink.textContent = id;
+        tabLink.addEventListener("click", () =>
+        {
+            selectTab(id);
+        });
+        document.getElementsByClassName("sidenav")[0].appendChild(tabLink);
+    }
+    tabContents[0].style.display = "block";
+}
+
+function selectTab(id)
+{
+    for (let i = 0; i < tabContents.length; i++)
+    {
+        tabContents[i].style.display = "none";
+    }
+    document.getElementById(id).style.display = "block";
+}
 
 async function showImmersions()
 {
@@ -111,8 +138,6 @@ async function showImmersions()
         position: "right-bottom",
     }
 }
-
-
 
 async function submit(event)
 {
