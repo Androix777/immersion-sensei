@@ -100,6 +100,53 @@ class database
             .del()
         return response
     }
+
+    static async getWorks()
+    {
+        let response = await database.knex
+            .from("works")
+            .select("id", "title")
+        return response
+    }
+
+    static async getWork(id)
+    {
+        let response = await database.knex
+            .from("works")
+            .select("id", "title")
+            .where('id', '=', id)
+        return response
+    }
+
+    static async addWork()
+    {
+        let response = await database.knex
+            .from("works")
+            .insert(
+            {
+                title: "新しい作品"
+            })
+            .returning('id')
+        return response;
+    }
+
+    static async changeWork(id, column, value)
+    {
+        let response = await database.knex
+            .from("works")
+            .where('id', '=', id)
+            .update(column, value);
+            return response
+    }
+
+    static async deleteWork(id)
+    {
+        let response = await database.knex
+            .from("works")
+            .where({ id: id })
+            .del()
+        return response
+    }
 }
 
 exports.database = database

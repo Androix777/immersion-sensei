@@ -2,7 +2,7 @@ import { durationEditor, durationFormatter } from "./tabulator-custom/duration.j
 import { minMaxFilterEditor, minMaxFilterFunction } from "./tabulator-custom/minMaxFilter.js";
 import { dateEditor } from "./tabulator-custom/date.js";
 
-export function createTable(tableData, onTryAddRow = undefined, onTryDeleteRow = undefined, onImmersionTextClick = undefined)
+export function createImmersionsTable(tableData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onImmersionTextClick = undefined)
 {
     var rowMenu = 
     [
@@ -42,7 +42,7 @@ export function createTable(tableData, onTryAddRow = undefined, onTryDeleteRow =
         },
     ];
 
-    var table = new Tabulator("#example-table", 
+    var table = new Tabulator(divID, 
     {
         layout:"fitColumns",
         data:tableData,

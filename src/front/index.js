@@ -1,15 +1,23 @@
 import {testChart} from './test.js'
-import {createTable} from './tables/test-table.js'
+import {createImmersionsTable} from './tables/immersions-table.js'
+import {createWorksTable} from './tables/works-table.js'
 
 var form = document.querySelector("form")
 var input = document.querySelector("input")
 var responses = document.querySelector("#responses")
 var tabContents = document.getElementsByClassName("tabcontent");
 
+var notifyOptions = 
+{
+    timeout: 1000, 
+    position: "right-bottom",
+}
+
 //testChart();
 window.api.tryConnect();
-showImmersions()
-createTabLinks()
+showImmersions();
+showWorks();
+createTabLinks();
 
 
 form.addEventListener
@@ -36,19 +44,51 @@ function createTabLinks()
 
 function selectTab(id)
 {
+    if(document.getElementById(id).style.display == "block")
+    {
+        return;
+    }
+    
+    var openTabFunDict = 
+    {
+        "immersions" : onImmersionsOpen
+    };
+    var closeTabFunDict = 
+    {
+        "immersions" : onImmersionsClose
+    };
+
     for (let i = 0; i < tabContents.length; i++)
     {
-        tabContents[i].style.display = "none";
+        if(tabContents[i].style.display == "block")
+        {
+            tabContents[i].style.display = "";
+            if(tabContents[i].getAttribute("id") in closeTabFunDict)
+            {
+                closeTabFunDict[tabContents[i].getAttribute("id")]();
+            }
+        }
     }
     document.getElementById(id).style.display = "block";
+    if(id in openTabFunDict)
+    {
+        openTabFunDict[id]();
+    }
+
+    function onImmersionsOpen()
+    {
+        console.log("onimmersionsopen");
+    }
+    function onImmersionsClose()
+    {
+        console.log("onimmersionsclose");
+    }
 }
 
 async function showImmersions()
 {
-    Notiflix.Loading.dots();
-
     var response = await window.api.getImmersions()
-    var table = createTable(response, onTryAddRow, onTryDeleteRow, onImmersionTextClick)
+    var table = createImmersionsTable(response, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick)
 
     table.on("cellEdited", async (cell) =>
     {
@@ -67,11 +107,6 @@ async function showImmersions()
         {
             Notiflix.Notify.success('Cell changed', notifyOptions);
         }
-    });
-
-    table.on("tableBuilt", (event) =>
-    {
-        Notiflix.Loading.remove(1000);
     });
 
     async function onTryAddRow()
@@ -131,11 +166,77 @@ async function showImmersions()
             Notiflix.Notify.warning(`NOT IMPLEMENTED FOR Text in ${cell.getData().id}`, notifyOptions);
         }
     }
+}
 
-    var notifyOptions = 
+async function showWorks()
+{
+
+    var response = await window.api.getWorks()
+    var table = createWorksTable(response, "#works-table", onTryAddRow, onTryDeleteRow)
+
+    table.on("cellEdited", async (cell) =>
     {
-        timeout: 1000, 
-        position: "right-bottom",
+        var id = cell.getData().id;
+        var column = cell.getColumn().getField();
+        var value = cell.getValue();
+
+        var response = await window.api.changeWork(id, column, value);
+
+        if(response == 0) 
+        {
+            Notiflix.Notify.failure('Not changed', notifyOptions); 
+            cell.restoreOldValue();
+        }
+        else 
+        {
+            Notiflix.Notify.success('Cell changed', notifyOptions);
+        }
+    });
+
+    async function onTryAddRow()
+    {
+        var response = await window.api.addWork();
+        if(response != 0)
+        {
+            response = await window.api.getWork(response[0]);
+            if(response == 0) 
+            {
+                Notiflix.Notify.failure('Not added', notifyOptions); 
+            }
+            else 
+            {
+                Notiflix.Notify.success('Row added', notifyOptions);
+                table.addData([response[0]], false);
+            }
+        }
+        else
+        {
+            Notiflix.Notify.failure('Not added', notifyOptions); 
+        }
+    }
+
+    async function onTryDeleteRow(row)
+    {
+        Notiflix.Confirm.show(
+            'Warning',
+            'Delete row?',
+            'Yes',
+            'No',
+            async () =>
+            {
+                var response = await window.api.deleteWork(row.getData().id)
+                if(response == 0) 
+                {
+                    Notiflix.Notify.failure('Not deleted', notifyOptions); 
+                }
+                else 
+                {
+                    Notiflix.Notify.success('Row deleted', notifyOptions);
+                    row.delete();
+                }
+            },
+            () => {},
+          );
     }
 }
 
