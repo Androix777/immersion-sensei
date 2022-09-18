@@ -2,7 +2,7 @@ import { durationEditor, durationFormatter } from "./tabulator-custom/duration.j
 import { minMaxFilterEditor, minMaxFilterFunction } from "./tabulator-custom/minMaxFilter.js";
 import { dateEditor } from "./tabulator-custom/date.js";
 
-export function createImmersionsTable(tableData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onImmersionTextClick = undefined)
+export function createImmersionsTable(immersionsData, worksData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onImmersionTextClick = undefined)
 {
     var rowMenu = 
     [
@@ -45,7 +45,7 @@ export function createImmersionsTable(tableData, divID, onTryAddRow = undefined,
     var table = new Tabulator(divID, 
     {
         layout:"fitColumns",
-        data:tableData,
+        data:immersionsData,
         rowContextMenu: rowMenu,
         movableColumns:true,
         initialSort:
@@ -103,6 +103,21 @@ export function createImmersionsTable(tableData, divID, onTryAddRow = undefined,
                 },
                 cellClick: onImmersionTextClick,
             },
+            {
+                title:"Work", 
+                field:"work_id", 
+                formatter: (cell, formatterParams, onRendered) => 
+                {
+                    console.log(cell.getValue())
+                    console.log(typeof cell.getValue())
+                    return worksData[cell.getValue()];
+                },
+                editor:"list",
+                editorParams:
+                {
+                    values: worksData,
+                },
+            }
         ],
     });
 

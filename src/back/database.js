@@ -58,7 +58,7 @@ class database
     {
         let response = await database.knex
             .from("immersions")
-            .select("id", "date", "time", "characters", "text_of_immersion_id")
+            .select("id", "date", "time", "characters", "text_of_immersion_id", "work_id")
         return response
     }
 

@@ -87,8 +87,24 @@ function selectTab(id)
 
 async function showImmersions()
 {
-    var response = await window.api.getImmersions()
-    var table = createImmersionsTable(response, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick)
+    var immersionsData = await window.api.getImmersions();
+    immersionsData.forEach(element => 
+        {
+            element["work_id"] = "" + element["work_id"]
+        })
+
+
+    var worksData = await window.api.getWorks();
+    var worksDataDict = {};
+
+    worksData.forEach(element => 
+    {
+        worksDataDict[element["id"]] = element["title"]
+    });
+
+    console.log(worksDataDict)
+
+    var table = createImmersionsTable(immersionsData, worksDataDict, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick);
 
     table.on("cellEdited", async (cell) =>
     {
