@@ -6,6 +6,8 @@ var form = document.querySelector("form")
 var input = document.querySelector("input")
 var responses = document.querySelector("#responses")
 var tabContents = document.getElementsByClassName("tabcontent");
+var immersionsTable = undefined;
+var worksTable = undefined;
 
 var notifyOptions = 
 {
@@ -13,10 +15,7 @@ var notifyOptions =
     position: "right-bottom",
 }
 
-//testChart();
 window.api.tryConnect();
-showImmersions();
-showWorks();
 createTabLinks();
 
 
@@ -39,7 +38,7 @@ function createTabLinks()
         });
         document.getElementsByClassName("sidenav")[0].appendChild(tabLink);
     }
-    tabContents[0].style.display = "block";
+    selectTab(tabContents[0].getAttribute("id"));
 }
 
 function selectTab(id)
@@ -51,11 +50,13 @@ function selectTab(id)
     
     var openTabFunDict = 
     {
-        "immersions" : onImmersionsOpen
+        "immersions" : onImmersionsOpen,
+        "works" : onWorksOpen
     };
     var closeTabFunDict = 
     {
-        "immersions" : onImmersionsClose
+        "immersions" : onImmersionsClose,
+        "works" : onWorksClose
     };
 
     for (let i = 0; i < tabContents.length; i++)
@@ -77,11 +78,19 @@ function selectTab(id)
 
     function onImmersionsOpen()
     {
-        console.log("onimmersionsopen");
+        showImmersions();
     }
     function onImmersionsClose()
     {
-        console.log("onimmersionsclose");
+        immersionsTable.destroy();
+    }
+    function onWorksOpen()
+    {
+        showWorks();
+    }
+    function onWorksClose()
+    {
+        worksTable.destroy();
     }
 }
 
@@ -102,11 +111,9 @@ async function showImmersions()
         worksDataDict[element["id"]] = element["title"]
     });
 
-    console.log(worksDataDict)
+    immersionsTable = createImmersionsTable(immersionsData, worksDataDict, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick);
 
-    var table = createImmersionsTable(immersionsData, worksDataDict, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick);
-
-    table.on("cellEdited", async (cell) =>
+    immersionsTable.on("cellEdited", async (cell) =>
     {
         var id = cell.getData().id;
         var column = cell.getColumn().getField();
@@ -188,9 +195,9 @@ async function showWorks()
 {
 
     var response = await window.api.getWorks()
-    var table = createWorksTable(response, "#works-table", onTryAddRow, onTryDeleteRow)
+    worksTable = createWorksTable(response, "#works-table", onTryAddRow, onTryDeleteRow)
 
-    table.on("cellEdited", async (cell) =>
+    worksTable.on("cellEdited", async (cell) =>
     {
         var id = cell.getData().id;
         var column = cell.getColumn().getField();
