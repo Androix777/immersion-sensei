@@ -156,6 +156,15 @@ class database
             .del()
         return response
     }
+
+    static async importWorks(data)
+    {
+        let response = await database.knex
+            .from("works")
+            .insert(data)
+            .returning('id')
+        return response;
+    }
 }
 
 exports.database = database

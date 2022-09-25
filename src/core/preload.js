@@ -79,7 +79,13 @@ async function deleteWork(id)
     return response;
 }
 
+async function importWorks(data)
+{
+    let response = await database.importWorks(data);
+    return response;
+}
+
 contextBridge.exposeInMainWorld
 (
-    "api", { tryConnect, queryDatabase, getImmersions, getImmersion, deleteImmersion, changeImmersion, addImmersion, getWorks, getWork, addWork, changeWork, deleteWork, importImmersions }
+    "api", { tryConnect, queryDatabase, getImmersions, getImmersion, deleteImmersion, changeImmersion, addImmersion, getWorks, getWork, addWork, changeWork, deleteWork, importImmersions, importWorks }
 )

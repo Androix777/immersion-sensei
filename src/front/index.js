@@ -32,18 +32,28 @@ form.addEventListener
 
 async function importCSVtoSQL()
 {
-    var data = await importCSV("../../user_data/import.csv");
+    var data = await importCSV("../../user_data/importPlus.csv");
+    var works = (Array.from(new Set(data.map(immersion => immersion.work)))).map(x => ({'title': x}));
+    var response = await window.api.importWorks(works);
+
+    var worksData = await window.api.getWorks();
+    var worksDataDict = {};
+    worksData.forEach(element => 
+    {
+        worksDataDict[element["title"]] = element["id"]
+    });
 
     for (let i = 0; i < data.length; i++)
     {
         data[i]['date'] = DateTime.fromFormat(data[i]['date'], 'yyyy/MM/dd').toFormat('yyyy-MM-dd');
         let time = data[i]['time'].match(/(\d+):(\d+):(\d+)/);
-        data[i]['time'] = Duration.fromObject({hours:time[1], minutes:time[2], seconds:time[3]}).toMillis() / 1000
+        data[i]['time'] = Duration.fromObject({hours:time[1], minutes:time[2], seconds:time[3]}).toMillis() / 1000;
+        data[i]['work_id'] = worksDataDict[data[i]['work']];
+        delete data[i]['work'];
     }
 
     var response = await window.api.importImmersions(data);
     console.log(response);
-
 }
 
 function createTabLinks()
