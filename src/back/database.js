@@ -101,6 +101,15 @@ class database
         return response
     }
 
+    static async importImmersions(data)
+    {
+        let response = await database.knex
+            .from("immersions")
+            .insert(data)
+            .returning('id')
+        return response;
+    }
+
     static async getWorks()
     {
         let response = await database.knex

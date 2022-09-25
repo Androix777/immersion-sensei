@@ -1,6 +1,8 @@
 import {testChart} from './test.js'
 import {createImmersionsTable} from './tables/immersions-table.js'
 import {createWorksTable} from './tables/works-table.js'
+import {importCSV} from './import.js'
+import {DateTime, Duration} from "../../node_modules/luxon/build/es6/luxon.js"
 
 var form = document.querySelector("form")
 var input = document.querySelector("input")
@@ -17,12 +19,32 @@ var notifyOptions =
 
 window.api.tryConnect();
 createTabLinks();
+document.getElementById('import').addEventListener("click", () =>
+{
+    importCSVtoSQL();
+});
 
 
 form.addEventListener
 (
     "submit", submit
 )
+
+async function importCSVtoSQL()
+{
+    var data = await importCSV("../../user_data/import.csv");
+
+    for (let i = 0; i < data.length; i++)
+    {
+        data[i]['date'] = DateTime.fromFormat(data[i]['date'], 'yyyy/MM/dd').toFormat('yyyy-MM-dd');
+        let time = data[i]['time'].match(/(\d+):(\d+):(\d+)/);
+        data[i]['time'] = Duration.fromObject({hours:time[1], minutes:time[2], seconds:time[3]}).toMillis() / 1000
+    }
+
+    var response = await window.api.importImmersions(data);
+    console.log(response);
+
+}
 
 function createTabLinks()
 {
@@ -145,7 +167,7 @@ async function showImmersions()
             else 
             {
                 Notiflix.Notify.success('Row added', notifyOptions);
-                table.addData([response[0]], false);
+                immersionsTable.addData([response[0]], false);
             }
         }
         else
@@ -229,7 +251,7 @@ async function showWorks()
             else 
             {
                 Notiflix.Notify.success('Row added', notifyOptions);
-                table.addData([response[0]], false);
+                worksTable.addData([response[0]], false);
             }
         }
         else
