@@ -68,7 +68,9 @@ function createTabLinks()
         {
             selectTab(id);
         });
-        document.getElementsByClassName("sidenav")[0].appendChild(tabLink);
+        const linkWrapper = document.createElement("div");
+        linkWrapper.appendChild(tabLink);
+        document.getElementsByClassName("sidenav")[0].appendChild(linkWrapper);
     }
     selectTab(tabContents[0].getAttribute("id"));
 }
