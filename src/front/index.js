@@ -148,16 +148,25 @@ async function showImmersions()
             element["work_id"] = "" + element["work_id"]
         })
 
+    
 
     var worksData = await window.api.getWorks();
     var worksDataDict = {};
-
     worksData.forEach(element => 
     {
         worksDataDict[element["id"]] = element["title"]
     });
 
-    immersionsTable = createImmersionsTable(immersionsData, worksDataDict, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick);
+    var tagsData = await window.api.getTags();
+    var tagsDataDict = {};
+    tagsData.forEach(element => 
+    {
+        tagsDataDict[element["id"]] = element["name"]
+    });
+
+    console.log(tagsDataDict)
+
+    immersionsTable = createImmersionsTable(immersionsData, worksDataDict, tagsDataDict, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick);
 
     immersionsTable.on("cellEdited", async (cell) =>
     {

@@ -56,9 +56,28 @@ class database
 
     static async getImmersions()
     {
-        let response = await database.knex
+        var response = await database.knex
             .from("immersions")
-            .select("id", "date", "time", "characters", "text_of_immersion_id", "work_id")
+            .select("id", "date", "time", "characters", "text_of_immersion_id", "work_id", "tag_id")
+            .leftJoin('immersions_tags', 'immersions.id', 'immersions_tags.immersion_id')
+
+        var response = response.reduce((result, row) => 
+        {
+            result[row.id] = result[row.id] || 
+            {
+                id: row.id,
+                date: row.date,
+                time: row.time,
+                characters: row.characters,
+                text_of_immersion_id: row.text_of_immersion_id,
+                work_id: row.work_id,
+                tags: [],
+            };
+        
+            result[row.id].tags.push(row.tag_id);
+            return result;
+        }, []).filter(n => n);
+
         return response
     }
 

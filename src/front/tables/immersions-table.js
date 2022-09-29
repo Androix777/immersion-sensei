@@ -2,7 +2,7 @@ import { durationEditor, durationFormatter } from "./tabulator-custom/duration.j
 import { minMaxFilterEditor, minMaxFilterFunction } from "./tabulator-custom/minMaxFilter.js";
 import { dateEditor } from "./tabulator-custom/date.js";
 
-export function createImmersionsTable(immersionsData, worksData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onImmersionTextClick = undefined)
+export function createImmersionsTable(immersionsData, worksData, tagsData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onImmersionTextClick = undefined)
 {
     var rowMenu = 
     [
@@ -115,6 +115,10 @@ export function createImmersionsTable(immersionsData, worksData, divID, onTryAdd
                 {
                     values: worksData,
                 },
+            },
+            {
+                title:"Tags", 
+                field:"tags",
             }
         ],
     });
