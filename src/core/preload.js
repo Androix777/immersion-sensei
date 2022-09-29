@@ -85,7 +85,58 @@ async function importWorks(data)
     return response;
 }
 
+async function getTags()
+{
+    let response = await database.getTags();
+    return response;
+}
+
+async function getTag(id)
+{
+    let response = await database.getTag(id);
+    return response;
+}
+
+async function addTag()
+{
+    let response = await database.addTag();
+    return response;
+}
+
+async function changeTag(id, column, value)
+{
+    let response = await database.changeTag(id, column, value);
+    return response;
+}
+
+async function deleteTag(id)
+{
+    let response = await database.deleteTag(id);
+    return response;
+}
+
 contextBridge.exposeInMainWorld
 (
-    "api", { tryConnect, queryDatabase, getImmersions, getImmersion, deleteImmersion, changeImmersion, addImmersion, getWorks, getWork, addWork, changeWork, deleteWork, importImmersions, importWorks }
+    "api", 
+    { 
+        tryConnect,
+        queryDatabase,
+        getImmersions,
+        getImmersion,
+        deleteImmersion,
+        changeImmersion,
+        addImmersion,
+        getWorks,
+        getWork,
+        addWork,
+        changeWork,
+        deleteWork,
+        importImmersions,
+        importWorks,
+        getTags,
+        getTag,
+        addTag,
+        changeTag,
+        deleteTag
+    }
 )

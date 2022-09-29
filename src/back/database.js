@@ -165,6 +165,53 @@ class database
             .returning('id')
         return response;
     }
+
+    static async getTags()
+    {
+        let response = await database.knex
+            .from("tags")
+            .select("id", "name")
+        return response
+    }
+
+    static async getTag(id)
+    {
+        let response = await database.knex
+            .from("tags")
+            .select("id", "name")
+            .where('id', '=', id)
+        return response
+    }
+
+    static async addTag()
+    {
+        let response = await database.knex
+            .from("tags")
+            .insert(
+            {
+                name: "タッグ"
+            })
+            .returning('id')
+        return response;
+    }
+
+    static async changeTag(id, column, value)
+    {
+        let response = await database.knex
+            .from("tags")
+            .where('id', '=', id)
+            .update(column, value);
+            return response
+    }
+
+    static async deleteTag(id)
+    {
+        let response = await database.knex
+            .from("tags")
+            .where({ id: id })
+            .del()
+        return response
+    }
 }
 
 exports.database = database

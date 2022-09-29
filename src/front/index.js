@@ -1,6 +1,7 @@
 import {testChart} from './test.js'
 import {createImmersionsTable} from './tables/immersions-table.js'
 import {createWorksTable} from './tables/works-table.js'
+import {createTagsTable} from './tables/tags-table.js'
 import {importCSV} from './import.js'
 import {DateTime, Duration} from "../../node_modules/luxon/build/es6/luxon.js"
 
@@ -10,6 +11,7 @@ var responses = document.querySelector("#responses")
 var tabContents = document.getElementsByClassName("tabcontent");
 var immersionsTable = undefined;
 var worksTable = undefined;
+var tagsTable = undefined;
 
 var notifyOptions = 
 {
@@ -85,12 +87,14 @@ function selectTab(id)
     var openTabFunDict = 
     {
         "immersions" : onImmersionsOpen,
-        "works" : onWorksOpen
+        "works" : onWorksOpen,
+        "tags" : onTagsOpen
     };
     var closeTabFunDict = 
     {
         "immersions" : onImmersionsClose,
-        "works" : onWorksClose
+        "works" : onWorksClose,
+        "tags" : onTagsClose
     };
 
     for (let i = 0; i < tabContents.length; i++)
@@ -125,6 +129,14 @@ function selectTab(id)
     function onWorksClose()
     {
         worksTable.destroy();
+    }
+    function onTagsOpen()
+    {
+        showTags();
+    }
+    function onTagsClose()
+    {
+        tagsTable.destroy();
     }
 }
 
@@ -282,6 +294,77 @@ async function showWorks()
             async () =>
             {
                 var response = await window.api.deleteWork(row.getData().id)
+                if(response == 0) 
+                {
+                    Notiflix.Notify.failure('Not deleted', notifyOptions); 
+                }
+                else 
+                {
+                    Notiflix.Notify.success('Row deleted', notifyOptions);
+                    row.delete();
+                }
+            },
+            () => {},
+          );
+    }
+}
+
+async function showTags()
+{
+    var response = await window.api.getTags()
+    tagsTable = createTagsTable(response, "#tags-table", onTryAddRow, onTryDeleteRow)
+
+    tagsTable.on("cellEdited", async (cell) =>
+    {
+        var id = cell.getData().id;
+        var column = cell.getColumn().getField();
+        var value = cell.getValue();
+
+        var response = await window.api.changeTag(id, column, value);
+
+        if(response == 0) 
+        {
+            Notiflix.Notify.failure('Not changed', notifyOptions); 
+            cell.restoreOldValue();
+        }
+        else 
+        {
+            Notiflix.Notify.success('Cell changed', notifyOptions);
+        }
+    });
+
+    async function onTryAddRow()
+    {
+        var response = await window.api.addTag();
+        if(response != 0)
+        {
+            response = await window.api.getTag(response[0]);
+            if(response == 0) 
+            {
+                Notiflix.Notify.failure('Not added', notifyOptions); 
+            }
+            else 
+            {
+                Notiflix.Notify.success('Row added', notifyOptions);
+                tagsTable.addData([response[0]], false);
+            }
+        }
+        else
+        {
+            Notiflix.Notify.failure('Not added', notifyOptions); 
+        }
+    }
+
+    async function onTryDeleteRow(row)
+    {
+        Notiflix.Confirm.show(
+            'Warning',
+            'Delete row?',
+            'Yes',
+            'No',
+            async () =>
+            {
+                var response = await window.api.deleteTag(row.getData().id)
                 if(response == 0) 
                 {
                     Notiflix.Notify.failure('Not deleted', notifyOptions); 
