@@ -41,11 +41,15 @@ class database
                 connection: 
                 {
                     filename: database.defaultDBPath,
-                    multipleStatements: true
+                    multipleStatements: true,
+                },
+                pool:
+                {
+                    afterCreate: (conn, cb) => conn.run('PRAGMA foreign_keys = ON', cb)
                 }
+    
             }
         );
-        
     }
 
     static async query(input)
