@@ -119,6 +119,23 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
             {
                 title:"Tags", 
                 field:"tags",
+                formatter:(cell, formatterParams, onRendered) =>
+                {
+                    var newValue = "";
+                    var cellValue = cell.getValue();
+
+                    cellValue.forEach(
+                        element => 
+                        {
+                            if(element in tagsData)
+                            {
+                                newValue += tagsData[element] + " ";
+                            }
+                            
+                        });
+                    
+                        return newValue;
+                }
             }
         ],
     });
