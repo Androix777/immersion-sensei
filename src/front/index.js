@@ -47,11 +47,12 @@ async function importCSVtoSQL()
 
     for (let i = 0; i < data.length; i++)
     {
-        data[i]['date'] = DateTime.fromFormat(data[i]['date'], 'yyyy/MM/dd').toFormat('yyyy-MM-dd');
+        data[i]['date'] = DateTime.fromFormat(data[i]['date'], 'd.M.yyyy').toFormat('yyyy-MM-dd');
         let time = data[i]['time'].match(/(\d+):(\d+):(\d+)/);
         data[i]['time'] = Duration.fromObject({hours:time[1], minutes:time[2], seconds:time[3]}).toMillis() / 1000;
         data[i]['work_id'] = worksDataDict[data[i]['work']];
         delete data[i]['work'];
+        data[i]["characters"] = data[i]["characters"].replaceAll(' ','');
     }
 
     var response = await window.api.importImmersions(data);
