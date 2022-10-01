@@ -175,8 +175,20 @@ async function showImmersions()
         var column = cell.getColumn().getField();
         var value = cell.getValue();
 
-        var response = await window.api.changeImmersion(id, column, value);
+        if(column == 'tags')
+        {
+            var response = await window.api.deleteImmersionTagLinks(id);
+            if (value.length > 0)
+            {
+                var response = await window.api.addImmersionTagLink(id, value);
+            }
+        }
+        else
+        {
+            var response = await window.api.changeImmersion(id, column, value);
+        }
 
+        // response == 0 might mean "deleted 0 records" or "inserted 0 records"
         if(response == 0) 
         {
             Notiflix.Notify.failure('Not changed', notifyOptions); 

@@ -235,6 +235,31 @@ class database
             .del()
         return response
     }
+
+    static async addImmersionTagLink(immersionID, tagIDList)
+    {
+        var insertList = [];
+        tagIDList.forEach(
+            element =>
+            {
+                insertList.push({immersion_id: immersionID, tag_id: element});
+            }
+        );
+        let response = await database.knex
+            .from("immersions_tags")
+            .insert(insertList)
+            .returning('immersion_id')
+        return response;
+    }
+
+    static async deleteImmersionTagLinks(id)
+    {
+        let response = await database.knex
+            .from("immersions_tags")
+            .where({ immersion_id: id })
+            .del()
+        return response
+    }
 }
 
 exports.database = database
