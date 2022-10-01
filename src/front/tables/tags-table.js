@@ -43,6 +43,7 @@ export function createTagsTable(tableData, divID, onTryAddRow = undefined, onTry
     {
         layout:"fitColumns",
         data:tableData,
+        height: 1000,
         rowContextMenu: rowMenu,
         movableColumns:true,
         initialSort:

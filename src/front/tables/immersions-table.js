@@ -46,6 +46,7 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
     {
         layout:"fitColumns",
         data:immersionsData,
+        height: 1000,
         rowContextMenu: rowMenu,
         movableColumns:true,
         initialSort:

@@ -43,6 +43,7 @@ export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTr
     {
         layout:"fitColumns",
         data:tableData,
+        height: 1000,
         rowContextMenu: rowMenu,
         movableColumns:true,
         initialSort:
