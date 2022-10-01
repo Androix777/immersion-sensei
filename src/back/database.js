@@ -236,7 +236,7 @@ class database
         return response
     }
 
-    static async addImmersionTagLink(immersionID, tagIDList)
+    static async addImmersionTagLinks(immersionID, tagIDList)
     {
         var insertList = [];
         tagIDList.forEach(

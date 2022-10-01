@@ -180,7 +180,7 @@ async function showImmersions()
             var response = await window.api.deleteImmersionTagLinks(id);
             if (value.length > 0)
             {
-                var response = await window.api.addImmersionTagLink(id, value);
+                var response = await window.api.addImmersionTagLinks(id, value);
             }
         }
         else
