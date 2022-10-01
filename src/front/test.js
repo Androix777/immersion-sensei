@@ -1,19 +1,29 @@
-export function testChart()
+export function testChart(data, worksDataDict)
 {
-    var data = [150, 230, 180, 90];
+    var chart = new dc.RowChart("#chart");
+    var chart2 = new dc.BarChart("#chart2");
 
-    var svg = d3.select(".main")
-        .append("svg")
-        .attr("width", 300)
-        .attr("height", 200);
+    var ndx = crossfilter(data);
+    var workDimension = ndx.dimension((d) => { return d.work_id; });
+    var dateDimension = ndx.dimension((d) => { return Date.parse(d.date); });
+    var countGroup = workDimension.group();
+    var charactersSumGroup = dateDimension.group().reduceSum(function(d) {return d.characters;});
 
-    svg.selectAll(".bar")
-        .data(data)
-        .enter()
-        .append("rect")
-        .attr("class", "bar")
-        .attr("width", function(d) {return d;})
-        .attr("height", "40")
-        .attr("y", function(d, i) {return i*50 + 10;})
-        .attr("x", "10");
-}
+    
+    chart
+        .width(768)
+        .height(480)
+        .elasticX(true)
+        .dimension(workDimension)
+        .group(countGroup)
+        .label(p => worksDataDict[p.key]);
+
+    chart2
+        .width(768)
+        .height(480)
+        .x(d3.scaleTime().domain([new Date(2021, 8, 1), new Date(2022, 9, 28)]))
+        .dimension(dateDimension)
+        .group(charactersSumGroup);
+    
+    dc.renderAll();
+};

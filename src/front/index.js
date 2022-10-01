@@ -3,7 +3,6 @@ import {createImmersionsTable} from './tables/immersions-table.js'
 import {createWorksTable} from './tables/works-table.js'
 import {createTagsTable} from './tables/tags-table.js'
 import {importCSV} from './import.js'
-import {DateTime, Duration} from "../../node_modules/luxon/build/es6/luxon.js"
 
 var form = document.querySelector("form")
 var input = document.querySelector("input")
@@ -47,9 +46,9 @@ async function importCSVtoSQL()
 
     for (let i = 0; i < data.length; i++)
     {
-        data[i]['date'] = DateTime.fromFormat(data[i]['date'], 'd.M.yyyy').toFormat('yyyy-MM-dd');
+        data[i]['date'] = luxon.DateTime.fromFormat(data[i]['date'], 'd.M.yyyy').toFormat('yyyy-MM-dd');
         let time = data[i]['time'].match(/(\d+):(\d+):(\d+)/);
-        data[i]['time'] = Duration.fromObject({hours:time[1], minutes:time[2], seconds:time[3]}).toMillis() / 1000;
+        data[i]['time'] = luxon.Duration.fromObject({hours:time[1], minutes:time[2], seconds:time[3]}).toMillis() / 1000;
         data[i]['work_id'] = worksDataDict[data[i]['work']];
         delete data[i]['work'];
         data[i]["characters"] = data[i]["characters"].replaceAll(' ','');
@@ -89,7 +88,8 @@ function selectTab(id)
     {
         "immersions" : onImmersionsOpen,
         "works" : onWorksOpen,
-        "tags" : onTagsOpen
+        "tags" : onTagsOpen,
+        "charts" : onChartsOpen,
     };
     var closeTabFunDict = 
     {
@@ -119,25 +119,44 @@ function selectTab(id)
     {
         showImmersions();
     }
+
     function onImmersionsClose()
     {
         immersionsTable.destroy();
     }
+
     function onWorksOpen()
     {
         showWorks();
     }
+
     function onWorksClose()
     {
         worksTable.destroy();
     }
+
     function onTagsOpen()
     {
         showTags();
     }
+
     function onTagsClose()
     {
         tagsTable.destroy();
+    }
+
+    async function onChartsOpen()
+    {
+        var immersionsData = await window.api.getImmersions();
+
+        var worksData = await window.api.getWorks();
+        var worksDataDict = {};
+        worksData.forEach(element => 
+        {
+            worksDataDict[element["id"]] = element["title"]
+        });
+
+        testChart(immersionsData, worksDataDict);
     }
 }
 
@@ -164,8 +183,6 @@ async function showImmersions()
     {
         tagsDataDict[element["id"]] = element["name"]
     });
-
-    console.log(tagsDataDict)
 
     immersionsTable = createImmersionsTable(immersionsData, worksDataDict, tagsDataDict, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick);
 

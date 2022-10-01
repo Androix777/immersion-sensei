@@ -10,7 +10,9 @@
         "start": "npm run && electron ."
     },
     "dependencies": {
+        "crossfilter2": "^1.5.4",
         "d3": "^7.4.5",
+        "dc": "^4.2.7",
         "knex": "^2.1.0",
         "luxon": "^2.4.0",
         "notiflix": "^3.2.5",

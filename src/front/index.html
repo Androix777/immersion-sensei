@@ -2,18 +2,10 @@
 
     <head>
         <title>Immersion sensei</title>
-        <style>
-            .bar {
-            fill: steelblue;
-            }
-            
-            .bar:hover {
-            fill: orange;
-            }
-        </style>
         <link rel="stylesheet" href="./styles/index.css">
         <link rel="stylesheet" href="../../node_modules/tabulator-tables/dist/css/tabulator_modern.min.css">
         <link rel="stylesheet" href="../../node_modules/notiflix/src/notiflix.css">
+        <link rel="stylesheet" href="../../node_modules/dc/dist/style/dc.css">
     </head>
 
     <body>
@@ -21,6 +13,8 @@
         <script src="../../node_modules/tabulator-tables/dist/js/tabulator.js"></script>
         <script src="../../node_modules/luxon/build/global/luxon.min.js"></script>
         <script src="../../node_modules/notiflix/src/notiflix.js"></script>
+        <script src="../../node_modules/dc/dist/dc.js"></script>
+        <script src="../../node_modules/crossfilter2/crossfilter.js"></script>
         <div class="sidenav"></div>
         <div class="main">
             <div id="common">
@@ -40,6 +34,10 @@
             </div>
             <div id="tags" class="tabcontent">
                 <div id="tags-table"></div>
+            </div>
+            <div id="charts" class="tabcontent">
+                <div id="chart"></div>
+                <div id="chart2"></div>
             </div>
         </div>
         <script type="module" src="index.js"></script>
