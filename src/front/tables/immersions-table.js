@@ -146,7 +146,6 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
 
                     function numsToTags(numList)
                     {
-                        console.log(numList);
                         var tagString = '';
 
                         numList.forEach(
