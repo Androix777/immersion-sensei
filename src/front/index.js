@@ -47,19 +47,13 @@ function selectTab(id)
     {
         return;
     }
-    
-    var openTabFunDict = 
+
+    var tabDict = 
     {
-        "immersions" : onImmersionsOpen,
-        "works" : onWorksOpen,
-        "tags" : onTagsOpen,
-        "charts" : onChartsOpen,
-    };
-    var closeTabFunDict = 
-    {
-        "immersions" : onImmersionsClose,
-        "works" : onWorksClose,
-        "tags" : onTagsClose
+        "immersions" : immersionsTab,
+        "works" : worksTab,
+        "tags" : tagsTab,
+        "charts" : chartTab
     };
 
     for (let i = 0; i < tabContents.length; i++)
@@ -67,51 +61,16 @@ function selectTab(id)
         if(tabContents[i].style.display == "block")
         {
             tabContents[i].style.display = "";
-            if(tabContents[i].getAttribute("id") in closeTabFunDict)
+            if(tabContents[i].getAttribute("id") in tabDict && typeof tabDict[tabContents[i].getAttribute("id")].hide === "function")
             {
-                closeTabFunDict[tabContents[i].getAttribute("id")]();
+                tabDict[tabContents[i].getAttribute("id")].hide();
             }
         }
     }
     document.getElementById(id).style.display = "block";
-    if(id in openTabFunDict)
+    if(id in tabDict && typeof tabDict[id].show === "function")
     {
-        openTabFunDict[id]();
-    }
-
-    function onImmersionsOpen()
-    {
-        immersionsTab.show();
-    }
-
-    function onImmersionsClose()
-    {
-        immersionsTab.hide();
-    }
-
-    function onWorksOpen()
-    {
-        worksTab.show();
-    }
-
-    function onWorksClose()
-    {
-        worksTab.hide();
-    }
-
-    function onTagsOpen()
-    {
-        tagsTab.show();
-    }
-
-    function onTagsClose()
-    {
-        tagsTab.hide();
-    }
-
-    async function onChartsOpen()
-    {
-        chartTab.show();
+        tabDict[id].show();
     }
 }
 
@@ -127,7 +86,7 @@ async function importCSVtoSQL()
     var worksDataDict = {};
     worksData.forEach(element => 
     {
-        worksDataDict[element["title"]] = element["id"]
+        worksDataDict[element["title"]] = element["id"];
     });
 
     for (let i = 0; i < data.length; i++)
@@ -146,17 +105,17 @@ async function importCSVtoSQL()
 
 async function submit(event)
 {
-    event.preventDefault()
-    var command = input?.value
-    var response = await window.api.queryDatabase(command)
-    showText(response)
+    event.preventDefault();
+    var command = input?.value;
+    var response = await window.api.queryDatabase(command);
+    showText(response);
 }
 
 function showText(text)
 {
-    var responseText = JSON.stringify(text)
-    input.value = ""
-    var response = document.createElement("div")
-    response.textContent = responseText
-    responses?.appendChild(response)
+    var responseText = JSON.stringify(text);
+    input.value = "";
+    var response = document.createElement("div");
+    response.textContent = responseText;
+    responses?.appendChild(response);
 }
