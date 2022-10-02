@@ -35,6 +35,7 @@ class Main
             }
         );
         Main.mainWindow.loadURL('file://' + __dirname + '/../front/index.html');
+        Main.mainWindow.maximize();
         Main.mainWindow.on('closed', Main.onClose);
     }
 
