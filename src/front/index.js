@@ -4,23 +4,10 @@ import * as tagsTab from './tabs/tags-tab.js'
 import * as chartTab from './tabs/charts-tab.js'
 import {importCSV} from './import.js'
 
-var form = document.querySelector("form")
-var input = document.querySelector("input")
-var responses = document.querySelector("#responses")
 var tabContents = document.getElementsByClassName("tabcontent");
 
 window.api.tryConnect();
 createTabLinks();
-document.getElementById('import').addEventListener("click", () =>
-{
-    importCSVtoSQL();
-});
-
-
-form.addEventListener
-(
-    "submit", submit
-)
 
 function createTabLinks()
 {
@@ -74,7 +61,21 @@ function selectTab(id)
     }
 }
 
-// Debug functions
+// Debug
+
+var form = document.querySelector("form")
+var input = document.querySelector("input")
+var responses = document.querySelector("#responses")
+
+form.addEventListener
+(
+    "submit", submit
+)
+
+document.getElementById('import').addEventListener("click", () =>
+{
+    importCSVtoSQL();
+});
 
 async function importCSVtoSQL()
 {
