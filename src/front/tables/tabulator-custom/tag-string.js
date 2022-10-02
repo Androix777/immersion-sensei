@@ -7,10 +7,14 @@ export function tagStringEditor(cell, onRendered, success, cancel, editorParams)
 
     input.value = cellValue;
 
-    onRendered(function(){
-        input.focus();
-        input.style.height = "100%";
-    });
+    onRendered
+    (
+        function()
+        {
+            input.focus();
+            input.style.height = "100%";
+        }
+    );
 
     function onChange()
     {

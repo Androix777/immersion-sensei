@@ -1,5 +1,5 @@
 import {createImmersionsTable} from '../tables/immersions-table.js'
-import * as notifyOptions from '../notiflix/notifyOptions.js'
+import * as notifyOptions from '../notiflix/notify-options.js'
 
 var currentNotifyOptions = notifyOptions.defaultOptions;
 var immersionsTable = undefined;

@@ -1,7 +1,7 @@
 import {testChart} from './test.js'
-import * as immersionsTab from './tabs/immersionsTab.js'
-import * as worksTab from './tabs/worksTab.js'
-import * as tagsTab from './tabs/tagsTab.js'
+import * as immersionsTab from './tabs/immersions-tab.js'
+import * as worksTab from './tabs/works-tab.js'
+import * as tagsTab from './tabs/tags-tab.js'
 import {importCSV} from './import.js'
 
 var form = document.querySelector("form")

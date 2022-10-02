@@ -1,6 +1,6 @@
 import { durationEditor, durationFormatter } from "./tabulator-custom/duration.js";
-import { tagStringEditor, tagStringFormatter } from "./tabulator-custom/tagString.js";
-import { minMaxFilterEditor, minMaxFilterFunction } from "./tabulator-custom/minMaxFilter.js";
+import { tagStringEditor, tagStringFormatter } from "./tabulator-custom/tag-string.js";
+import { minMaxFilterEditor, minMaxFilterFunction } from "./tabulator-custom/min-max-filter.js";
 import { dateEditor } from "./tabulator-custom/date.js";
 
 export function createImmersionsTable(immersionsData, worksData, tagsData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onImmersionTextClick = undefined)
