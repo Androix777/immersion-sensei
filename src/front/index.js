@@ -1,22 +1,13 @@
 import {testChart} from './test.js'
-import {createImmersionsTable} from './tables/immersions-table.js'
-import {createWorksTable} from './tables/works-table.js'
-import {createTagsTable} from './tables/tags-table.js'
+import * as immersionsTab from './tabs/immersionsTab.js'
+import * as worksTab from './tabs/worksTab.js'
+import * as tagsTab from './tabs/tagsTab.js'
 import {importCSV} from './import.js'
 
 var form = document.querySelector("form")
 var input = document.querySelector("input")
 var responses = document.querySelector("#responses")
 var tabContents = document.getElementsByClassName("tabcontent");
-var immersionsTable = undefined;
-var worksTable = undefined;
-var tagsTable = undefined;
-
-var notifyOptions = 
-{
-    timeout: 1000, 
-    position: "right-bottom",
-}
 
 window.api.tryConnect();
 createTabLinks();
@@ -30,33 +21,6 @@ form.addEventListener
 (
     "submit", submit
 )
-
-async function importCSVtoSQL()
-{
-    var data = await importCSV("../../user_data/importPlus.csv");
-    var works = (Array.from(new Set(data.map(immersion => immersion.work)))).map(x => ({'title': x}));
-    var response = await window.api.importWorks(works);
-
-    var worksData = await window.api.getWorks();
-    var worksDataDict = {};
-    worksData.forEach(element => 
-    {
-        worksDataDict[element["title"]] = element["id"]
-    });
-
-    for (let i = 0; i < data.length; i++)
-    {
-        data[i]['date'] = luxon.DateTime.fromFormat(data[i]['date'], 'd.M.yyyy').toFormat('yyyy-MM-dd');
-        let time = data[i]['time'].match(/(\d+):(\d+):(\d+)/);
-        data[i]['time'] = luxon.Duration.fromObject({hours:time[1], minutes:time[2], seconds:time[3]}).toMillis() / 1000;
-        data[i]['work_id'] = worksDataDict[data[i]['work']];
-        delete data[i]['work'];
-        data[i]["characters"] = data[i]["characters"].replaceAll(' ','');
-    }
-
-    var response = await window.api.importImmersions(data);
-    console.log(response);
-}
 
 function createTabLinks()
 {
@@ -117,32 +81,32 @@ function selectTab(id)
 
     function onImmersionsOpen()
     {
-        showImmersions();
+        immersionsTab.show();
     }
 
     function onImmersionsClose()
     {
-        immersionsTable.destroy();
+        immersionsTab.hide();
     }
 
     function onWorksOpen()
     {
-        showWorks();
+        worksTab.show();
     }
 
     function onWorksClose()
     {
-        worksTable.destroy();
+        worksTab.hide();
     }
 
     function onTagsOpen()
     {
-        showTags();
+        tagsTab.show();
     }
 
     function onTagsClose()
     {
-        tagsTable.destroy();
+        tagsTab.hide();
     }
 
     async function onChartsOpen()
@@ -160,263 +124,33 @@ function selectTab(id)
     }
 }
 
-async function showImmersions()
-{
-    var immersionsData = await window.api.getImmersions();
-    immersionsData.forEach(element => 
-        {
-            element["work_id"] = "" + element["work_id"]
-        })
+// Debug functions
 
-    
+async function importCSVtoSQL()
+{
+    var data = await importCSV("../../user_data/importPlus.csv");
+    var works = (Array.from(new Set(data.map(immersion => immersion.work)))).map(x => ({'title': x}));
+    var response = await window.api.importWorks(works);
 
     var worksData = await window.api.getWorks();
     var worksDataDict = {};
     worksData.forEach(element => 
     {
-        worksDataDict[element["id"]] = element["title"]
+        worksDataDict[element["title"]] = element["id"]
     });
 
-    var tagsData = await window.api.getTags();
-    var tagsDataDict = {};
-    tagsData.forEach(element => 
+    for (let i = 0; i < data.length; i++)
     {
-        tagsDataDict[element["id"]] = element["name"]
-    });
-
-    immersionsTable = createImmersionsTable(immersionsData, worksDataDict, tagsDataDict, "#immersions-table", onTryAddRow, onTryDeleteRow, onImmersionTextClick);
-
-    immersionsTable.on("cellEdited", async (cell) =>
-    {
-        var id = cell.getData().id;
-        var column = cell.getColumn().getField();
-        var value = cell.getValue();
-
-        if(column == 'tags')
-        {
-            var response = await window.api.deleteImmersionTagLinks(id);
-            if (value.length > 0)
-            {
-                var response = await window.api.addImmersionTagLinks(id, value);
-            }
-        }
-        else
-        {
-            var response = await window.api.changeImmersion(id, column, value);
-        }
-
-        // response == 0 might mean "deleted 0 records" or "inserted 0 records"
-        if(response == 0) 
-        {
-            Notiflix.Notify.failure('Not changed', notifyOptions); 
-            cell.restoreOldValue();
-        }
-        else 
-        {
-            Notiflix.Notify.success('Cell changed', notifyOptions);
-        }
-    });
-
-    async function onTryAddRow()
-    {
-        var response = await window.api.addImmersion();
-        if(response != 0)
-        {
-            response = await window.api.getImmersion(response[0]);
-            if(response == 0) 
-            {
-                Notiflix.Notify.failure('Not added', notifyOptions); 
-            }
-            else 
-            {
-                Notiflix.Notify.success('Row added', notifyOptions);
-                immersionsTable.addData([response[0]], false);
-            }
-        }
-        else
-        {
-            Notiflix.Notify.failure('Not added', notifyOptions); 
-        }
+        data[i]['date'] = luxon.DateTime.fromFormat(data[i]['date'], 'yyyy/MM/dd').toFormat('yyyy-MM-dd');
+        let time = data[i]['time'].match(/(\d+):(\d+):(\d+)/);
+        data[i]['time'] = luxon.Duration.fromObject({hours:time[1], minutes:time[2], seconds:time[3]}).toMillis() / 1000;
+        data[i]['work_id'] = worksDataDict[data[i]['work']];
+        delete data[i]['work'];
+        data[i]["characters"] = data[i]["characters"].replaceAll(' ','');
     }
 
-    async function onTryDeleteRow(row)
-    {
-        Notiflix.Confirm.show(
-            'Warning',
-            'Delete row?',
-            'Yes',
-            'No',
-            async () =>
-            {
-                var response = await window.api.deleteImmersion(row._row.data.id)
-                if(response == 0) 
-                {
-                    Notiflix.Notify.failure('Not deleted', notifyOptions); 
-                }
-                else 
-                {
-                    Notiflix.Notify.success('Row deleted', notifyOptions);
-                    row.delete();
-                }
-            },
-            () => {},
-          );
-    }
-
-    function onImmersionTextClick(e, cell)
-    {
-        if(cell.getValue() == false)
-        {
-            Notiflix.Notify.warning(`NOT IMPLEMENTED FOR No text in ${cell.getData().id}`, notifyOptions);
-        }
-        else
-        {
-            Notiflix.Notify.warning(`NOT IMPLEMENTED FOR Text in ${cell.getData().id}`, notifyOptions);
-        }
-    }
-}
-
-async function showWorks()
-{
-
-    var response = await window.api.getWorks()
-    worksTable = createWorksTable(response, "#works-table", onTryAddRow, onTryDeleteRow)
-
-    worksTable.on("cellEdited", async (cell) =>
-    {
-        var id = cell.getData().id;
-        var column = cell.getColumn().getField();
-        var value = cell.getValue();
-
-        var response = await window.api.changeWork(id, column, value);
-
-        if(response == 0) 
-        {
-            Notiflix.Notify.failure('Not changed', notifyOptions); 
-            cell.restoreOldValue();
-        }
-        else 
-        {
-            Notiflix.Notify.success('Cell changed', notifyOptions);
-        }
-    });
-
-    async function onTryAddRow()
-    {
-        var response = await window.api.addWork();
-        if(response != 0)
-        {
-            response = await window.api.getWork(response[0]);
-            if(response == 0) 
-            {
-                Notiflix.Notify.failure('Not added', notifyOptions); 
-            }
-            else 
-            {
-                Notiflix.Notify.success('Row added', notifyOptions);
-                worksTable.addData([response[0]], false);
-            }
-        }
-        else
-        {
-            Notiflix.Notify.failure('Not added', notifyOptions); 
-        }
-    }
-
-    async function onTryDeleteRow(row)
-    {
-        Notiflix.Confirm.show(
-            'Warning',
-            'Delete row?',
-            'Yes',
-            'No',
-            async () =>
-            {
-                var response = await window.api.deleteWork(row.getData().id)
-                if(response == 0) 
-                {
-                    Notiflix.Notify.failure('Not deleted', notifyOptions); 
-                }
-                else 
-                {
-                    Notiflix.Notify.success('Row deleted', notifyOptions);
-                    row.delete();
-                }
-            },
-            () => {},
-          );
-    }
-}
-
-async function showTags()
-{
-    var response = await window.api.getTags()
-    tagsTable = createTagsTable(response, "#tags-table", onTryAddRow, onTryDeleteRow)
-
-    tagsTable.on("cellEdited", async (cell) =>
-    {
-        var id = cell.getData().id;
-        var column = cell.getColumn().getField();
-        var value = cell.getValue();
-
-        var response = await window.api.changeTag(id, column, value);
-
-        if(response == 0) 
-        {
-            Notiflix.Notify.failure('Not changed', notifyOptions); 
-            cell.restoreOldValue();
-        }
-        else 
-        {
-            Notiflix.Notify.success('Cell changed', notifyOptions);
-        }
-    });
-
-    async function onTryAddRow()
-    {
-        var response = await window.api.addTag();
-        if(response != 0)
-        {
-            response = await window.api.getTag(response[0]);
-            if(response == 0) 
-            {
-                Notiflix.Notify.failure('Not added', notifyOptions); 
-            }
-            else 
-            {
-                Notiflix.Notify.success('Row added', notifyOptions);
-                tagsTable.addData([response[0]], false);
-            }
-        }
-        else
-        {
-            Notiflix.Notify.failure('Not added', notifyOptions); 
-        }
-    }
-
-    async function onTryDeleteRow(row)
-    {
-        Notiflix.Confirm.show(
-            'Warning',
-            'Delete row?',
-            'Yes',
-            'No',
-            async () =>
-            {
-                var response = await window.api.deleteTag(row.getData().id)
-                if(response == 0) 
-                {
-                    Notiflix.Notify.failure('Not deleted', notifyOptions); 
-                }
-                else 
-                {
-                    Notiflix.Notify.success('Row deleted', notifyOptions);
-                    row.delete();
-                }
-            },
-            () => {},
-          );
-    }
+    var response = await window.api.importImmersions(data);
+    console.log(response);
 }
 
 async function submit(event)
