@@ -1,4 +1,4 @@
-export function testChart(data, worksDataDict)
+export function create(data, worksDataDict)
 {
     var chart = new dc.RowChart("#chart");
     var chart2 = new dc.BarChart("#chart2");

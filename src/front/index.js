@@ -1,7 +1,7 @@
-import {testChart} from './test.js'
 import * as immersionsTab from './tabs/immersions-tab.js'
 import * as worksTab from './tabs/works-tab.js'
 import * as tagsTab from './tabs/tags-tab.js'
+import * as chartTab from './tabs/charts-tab.js'
 import {importCSV} from './import.js'
 
 var form = document.querySelector("form")
@@ -111,16 +111,7 @@ function selectTab(id)
 
     async function onChartsOpen()
     {
-        var immersionsData = await window.api.getImmersions();
-
-        var worksData = await window.api.getWorks();
-        var worksDataDict = {};
-        worksData.forEach(element => 
-        {
-            worksDataDict[element["id"]] = element["title"]
-        });
-
-        testChart(immersionsData, worksDataDict);
+        chartTab.show();
     }
 }
 
