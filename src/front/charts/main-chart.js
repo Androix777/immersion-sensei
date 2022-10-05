@@ -87,6 +87,7 @@ export function create(data, worksDataDict)
         .height(480)
         .margins(margins)
         .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
+        .xUnits(d3.timeDays)
         .dimension(dateDimension)
         .group(timeSumGroupStacked, '' + worksIDList[0], sel_stack(worksIDList[0]));
     
@@ -114,6 +115,7 @@ export function create(data, worksDataDict)
         .margins(margins)
         .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
         .dimension(dateDimension)
+        .xUnits(d3.timeDays)
         .group(charactersSumGroupStacked, '' + worksIDList[0], sel_stack(worksIDList[0]));
 
     chart4.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
