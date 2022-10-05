@@ -27,6 +27,24 @@ export function create(data, worksDataDict)
         },
         () => ({})
     );
+
+    //dynamic date range
+    var maxDate = Number.NEGATIVE_INFINITY
+    var minDate = Number.POSITIVE_INFINITY
+    dateDimension.group().top(Number.POSITIVE_INFINITY).forEach((item) =>
+    {
+        if(item.key > maxDate)
+        {
+            maxDate = item.key;
+        }
+        if(item.key < minDate)
+        {
+            minDate = item.key;
+        }
+    });
+    //extend by 1 day
+    minDate -= 1000 * 60 * 60 * 24 * 1;
+    maxDate += 1000 * 60 * 60 * 24 * 1;
     
     chart
         .width(null)
@@ -41,7 +59,7 @@ export function create(data, worksDataDict)
         .width(null)
         .height(480)
         .margins(margins)
-        .x(d3.scaleTime().domain([new Date(2021, 8, 1), new Date(2022, 9, 28)]))
+        .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
         .dimension(dateDimension)
         .group(charactersSumGroup);
      
@@ -49,7 +67,7 @@ export function create(data, worksDataDict)
         .width(null)
         .height(480)
         .margins(margins)
-        .x(d3.scaleTime().domain([new Date(2021, 8, 1), new Date(2022, 9, 28)]))
+        .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
         .dimension(dateDimension)
         .group(timeSumGroup);
     
@@ -76,7 +94,7 @@ export function create(data, worksDataDict)
         .width(null)
         .height(480)
         .margins(margins)
-        .x(d3.scaleTime().domain([new Date(2021, 8, 1), new Date(2022, 9, 28)]))
+        .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
         .dimension(dateDimension)
         .group(charactersSumGroupStacked, '' + worksIDList[0], sel_stack(worksIDList[0]));
 
