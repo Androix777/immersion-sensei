@@ -13,6 +13,20 @@ export function create(data, worksDataDict)
     var charactersSumGroup = dateDimension.group().reduceSum(function(d) {return d.characters;});
     var timeSumGroup = dateDimension.group().reduceSum(function (d) {return d.time});
 
+    var timeSumGroupStacked = dateDimension.group().reduce(
+        (p, v) =>
+        {
+            p[v.work_id] = (p[v.work_id] || 0) + v.time;
+            return p;
+        },
+        (p, v) =>
+        {
+            p[v.work_id] = (p[v.work_id] || 0) - v.time;
+            return p;
+        },
+        () => ({})
+    );
+
     var charactersSumGroupStacked = dateDimension.group().reduce(
         (p, v) =>
         {
@@ -74,12 +88,12 @@ export function create(data, worksDataDict)
         .margins(margins)
         .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
         .dimension(dateDimension)
-        .group(charactersSumGroupStacked, '' + worksIDList[0], sel_stack(worksIDList[0]));
+        .group(timeSumGroupStacked, '' + worksIDList[0], sel_stack(worksIDList[0]));
     
     chart3.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
     for(let i = 1; i < worksIDList.length; ++i)
     {
-        chart3.stack(charactersSumGroupStacked, '' + worksIDList[i], sel_stack(worksIDList[i]));
+        chart3.stack(timeSumGroupStacked, '' + worksIDList[i], sel_stack(worksIDList[i]));
     }
 
 
