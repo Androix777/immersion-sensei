@@ -1,7 +1,6 @@
 export function create(data, worksDataDict)
 {
     var chart = new dc.RowChart("#chart");
-    var chart2 = new dc.BarChart("#chart2");
     var chart3 = new dc.BarChart('#chart3');
     var chart4 = new dc.BarChart('#chart4');
 
@@ -45,40 +44,8 @@ export function create(data, worksDataDict)
     //extend by 1 day
     minDate -= 1000 * 60 * 60 * 24 * 1;
     maxDate += 1000 * 60 * 60 * 24 * 1;
-    
-    chart
-        .width(null)
-        .height(480)
-        .margins(margins)
-        .elasticX(true)
-        .dimension(workDimension)
-        .group(countGroup)
-        .label(p => worksDataDict[p.key]);
 
-    chart2
-        .width(null)
-        .height(480)
-        .margins(margins)
-        .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
-        .dimension(dateDimension)
-        .group(charactersSumGroup);
-     
-    chart3
-        .width(null)
-        .height(480)
-        .margins(margins)
-        .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
-        .dimension(dateDimension)
-        .group(timeSumGroup);
-    
-    chart3.yAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
-    var timeTickValues = [60 * 60];
-    while(Math.max.apply(Math, timeTickValues) < timeSumGroup.top(1)[0].value)
-    {
-        timeTickValues.push(Math.max.apply(Math, timeTickValues) + 60 * 60);
-    }
-    chart3.yAxis().tickValues(timeTickValues);
-
+    //stack
     var worksIDList = [];
     workDimension.group().all().forEach((item) => 
     {
@@ -89,7 +56,44 @@ export function create(data, worksDataDict)
     {
         return d => d.value[i];
     }
+    
+    chart
+        .width(null)
+        .height(480)
+        .margins(margins)
+        .elasticX(true)
+        .dimension(workDimension)
+        .group(countGroup)
+        .label(p => worksDataDict[p.key]);
+     
 
+        
+    chart3
+        .width(null)
+        .height(480)
+        .margins(margins)
+        .x(d3.scaleTime().domain([new Date(minDate), new Date(maxDate)]))
+        .dimension(dateDimension)
+        .group(charactersSumGroupStacked, '' + worksIDList[0], sel_stack(worksIDList[0]));
+    
+    chart3.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
+    for(let i = 1; i < worksIDList.length; ++i)
+    {
+        chart3.stack(charactersSumGroupStacked, '' + worksIDList[i], sel_stack(worksIDList[i]));
+    }
+
+
+    chart3.yAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
+    var timeTickValues = [60 * 60];
+    while(Math.max.apply(Math, timeTickValues) < timeSumGroup.top(1)[0].value)
+    {
+        timeTickValues.push(Math.max.apply(Math, timeTickValues) + 60 * 60);
+    }
+    chart3.yAxis().tickValues(timeTickValues);
+    
+
+
+    
     chart4
         .width(null)
         .height(480)
@@ -104,6 +108,24 @@ export function create(data, worksDataDict)
     {
         chart4.stack(charactersSumGroupStacked, '' + worksIDList[i], sel_stack(worksIDList[i]));
     }
+
+
+    const charts = [chart3,chart4];
+    let broadcasting = false; // don't repropogate (infinite loop)
+    for(const chartA of charts)
+    {
+        chartA.on('filtered', function(chart, filter) {
+            if(broadcasting) return;
+            broadcasting = true;
+            for(const chartB of charts.filter(chartB => chartB !== chartA))
+            {
+                chartB.replaceFilter(filter);
+            } 
+            broadcasting = false;
+        })
+    }
+        
+
 
     dc.renderAll();
 };
