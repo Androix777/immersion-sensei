@@ -44,3 +44,8 @@ body
 {
     display: none;
 }
+
+.dc-chart g.row text 
+{
+    fill: black !important; 
+}
