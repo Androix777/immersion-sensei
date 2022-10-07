@@ -159,7 +159,9 @@ export function create(data, worksDataDict)
             .elasticY(true)
             .dimension(dateDimension)
             .xUnits(dateUnit.range)
-            .group(charactersSumGroupStackedInterval, '' + worksIDList[0], sel_stack(worksIDList[0]));
+            .group(charactersSumGroupStackedInterval, '' + worksIDList[0], sel_stack(worksIDList[0]))
+            .barPadding(0.1)
+            .centerBar(true);
         
         charactersSumChart.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
 
