@@ -1,6 +1,9 @@
-export function create(data, worksDataDict)
+import * as immersionsTableReadOnly from '../tables/immersions-table-read-only.js'
+
+export async function create(data, worksDataDict, tagsDataDict)
 {
     var rowChart = new dc.RowChart("#row-chart");
+    var charactersSumChart = new dc.BarChart('#characters-sum-chart');
     var chart3 = new dc.BarChart('#chart3');
     var chart4 = new dc.BarChart('#chart4');
 
@@ -132,8 +135,6 @@ export function create(data, worksDataDict)
         .attr('selected', function(d) { return d === 'Days' ? '' : null; });
 
     //variable bar width chart
-    var charactersSumChart = new dc.BarChart('#characters-sum-chart');
-
     function drawCharactersSumChart(dateUnit)
     {
         var charactersSumGroupStackedInterval = dateDimension.group(dateUnit).reduce(
@@ -194,6 +195,16 @@ export function create(data, worksDataDict)
             broadcasting = false;
         })
     }
+
+    
+
+    var immersionsTable = immersionsTableReadOnly.create(data, worksDataDict, tagsDataDict, "#immersions-table-charts");
+    ndx.onChange(eventType => 
+    {
+        console.log(eventType);
+        immersionsTable.setFilter("id", "in", ndx.allFiltered().map(({id})=>id));
+    });
+
 
     dc.renderAll();
 };

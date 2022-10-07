@@ -11,5 +11,12 @@ export async function show()
         worksDataDict[element["id"]] = element["title"]
     });
 
-    mainChart.create(immersionsData, worksDataDict);
+    var tagsData = await window.api.getTags();
+    var tagsDataDict = {};
+    tagsData.forEach(element => 
+    {
+        tagsDataDict[element["id"]] = element["name"]
+    });
+
+    mainChart.create(immersionsData, worksDataDict, tagsDataDict);
 }
