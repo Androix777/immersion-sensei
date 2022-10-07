@@ -1,6 +1,6 @@
 export function create(data, worksDataDict)
 {
-    var chart = new dc.RowChart("#chart");
+    var rowChart = new dc.RowChart("#row-chart");
     var chart3 = new dc.BarChart('#chart3');
     var chart4 = new dc.BarChart('#chart4');
 
@@ -71,7 +71,7 @@ export function create(data, worksDataDict)
         return d => d.value[i];
     }
     
-    chart
+    rowChart
         .width(null)
         .height(480)
         .margins(margins)
@@ -79,9 +79,7 @@ export function create(data, worksDataDict)
         .dimension(workDimension)
         .group(countGroup)
         .label(p => worksDataDict[p.key]);
-     
-
-        
+            
     chart3
         .width(null)
         .height(480)
@@ -97,7 +95,6 @@ export function create(data, worksDataDict)
         chart3.stack(timeSumGroupStacked, '' + worksIDList[i], sel_stack(worksIDList[i]));
     }
 
-
     chart3.yAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
     var timeTickValues = [60 * 60];
     while(Math.max.apply(Math, timeTickValues) < timeSumGroup.top(1)[0].value)
@@ -105,9 +102,6 @@ export function create(data, worksDataDict)
         timeTickValues.push(Math.max.apply(Math, timeTickValues) + 60 * 60);
     }
     chart3.yAxis().tickValues(timeTickValues);
-    
-
-
     
     chart4
         .width(null)
@@ -119,14 +113,72 @@ export function create(data, worksDataDict)
         .group(charactersSumGroupStacked, '' + worksIDList[0], sel_stack(worksIDList[0]));
 
     chart4.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
-
     for(let i = 1; i < worksIDList.length; ++i)
     {
         chart4.stack(charactersSumGroupStacked, '' + worksIDList[i], sel_stack(worksIDList[i]));
     }
 
+    //intervals
+    var dateUnits = {
+        Days: d3.timeDay,
+        Weeks: d3.timeWeek,
+        Months: d3.timeMonth,
+        Years: d3.timeYear
+    };
+    d3.select('#date-unit').selectAll('option')
+        .data(Object.keys(dateUnits))
+        .enter().append('option')
+        .text(function(d) { return d; })
+        .attr('selected', function(d) { return d === 'Days' ? '' : null; });
 
-    const charts = [chart3,chart4];
+    //variable bar width chart
+    var charactersSumChart = new dc.BarChart('#characters-sum-chart');
+
+    function drawCharactersSumChart(dateUnit)
+    {
+        var charactersSumGroupStackedInterval = dateDimension.group(dateUnit).reduce(
+            (p, v) =>
+            {
+                p[v.work_id] = (p[v.work_id] || 0) + v.characters;
+                return p;
+            },
+            (p, v) =>
+            {
+                p[v.work_id] = (p[v.work_id] || 0) - v.characters;
+                return p;
+            },
+            () => ({})
+        );
+        
+        var timeMargin = 1000 * 60 * 60 * 24 * (1 * +(dateUnit == d3.timeDay) + 7 * +(dateUnit == d3.timeWeek) + 30 * +(dateUnit == d3.timeMonth) + 365 * +(dateUnit == d3.timeYear));
+        charactersSumChart
+            .width(null)
+            .height(480)
+            .margins(margins)
+            .x(d3.scaleTime().domain([new Date(minDate - timeMargin), new Date(maxDate + timeMargin)]))
+            .elasticY(true)
+            .dimension(dateDimension)
+            .xUnits(dateUnit.range)
+            .group(charactersSumGroupStackedInterval, '' + worksIDList[0], sel_stack(worksIDList[0]));
+        
+        charactersSumChart.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
+
+        for(let i = 1; i < worksIDList.length; ++i)
+        {
+            charactersSumChart.stack(charactersSumGroupStackedInterval, '' + worksIDList[i], sel_stack(worksIDList[i]));
+        }
+
+        dc.renderAll();
+    }
+    
+    d3.select('#date-unit').on('change', () => 
+    {
+        drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value]);
+    });
+
+    drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value]);
+
+    const charts = [chart3, chart4, charactersSumChart];
     let broadcasting = false; // don't repropogate (infinite loop)
     for(const chartA of charts)
     {
@@ -140,8 +192,6 @@ export function create(data, worksDataDict)
             broadcasting = false;
         })
     }
-        
-
 
     dc.renderAll();
 };
