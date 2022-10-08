@@ -28,9 +28,14 @@ export async function create(data, worksDataDict, tagsDataDict)
 
     //stack
     var worksIDList = [];
+    var colorMap = { };
+
+    var index = 0;
     workDimension.group().all().forEach((item) => 
     {
         worksIDList.push(item['key']);
+        colorMap[item['key']] = d3.schemeCategory10[(index+1) % 10];
+        index++;
     })
     function sel_stack(i)
     {
@@ -89,7 +94,19 @@ export async function create(data, worksDataDict, tagsDataDict)
             .xUnits(dateUnit.range)
             .group(timelineGroup, '' + worksIDList[0], sel_stack(worksIDList[0]))
             .barPadding(0.1)
-            .centerBar(true);
+            .centerBar(true)
+            .on('pretransition', function (chart) 
+            {
+                chart.selectAll("g rect").style("fill", function (d) 
+                {
+                    return colorMap[d.layer];
+                });
+                chart.selectAll('g.dc-legend-item rect').style('fill', function (d) 
+                {
+                    console.log(d)
+                    return colorMap[d.name];
+                });
+            });
         
         timelineChart.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
 
@@ -136,6 +153,12 @@ export async function create(data, worksDataDict, tagsDataDict)
             .elasticX(true)
             .dimension(workDimension)
             .group(rowGroup)
+            .colorCalculator(
+                function (d) 
+                { 
+                    return colorMap[d.key];
+                }
+            )
             .label(p => worksDataDict[p.key]);
         
         switch(immersionUnit)
