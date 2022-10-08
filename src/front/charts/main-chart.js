@@ -73,15 +73,6 @@ export async function create(data, worksDataDict, tagsDataDict)
     {
         return d => d.value[i];
     }
-    
-    rowChart
-        .width(null)
-        .height(480)
-        .margins(margins)
-        .elasticX(true)
-        .dimension(workDimension)
-        .group(countGroup)
-        .label(p => worksDataDict[p.key]);
             
     chart3
         .width(null)
@@ -207,20 +198,60 @@ export async function create(data, worksDataDict, tagsDataDict)
         {
             timelineChart.stack(timelineGroup, '' + worksIDList[i], sel_stack(worksIDList[i]));
         }
+    }
 
-        dc.renderAll();
+    function drawRowChart(immersionUnit)
+    {
+        var rowGroup = workDimension.group().reduceSum(function (d) {return d[immersionUnit];});
+        rowChart
+            .width(null)
+            .height(480)
+            .margins(margins)
+            .elasticX(true)
+            .dimension(workDimension)
+            .group(rowGroup)
+            .label(p => worksDataDict[p.key]);
+        
+        switch(immersionUnit)
+        {
+            case 'time':
+                rowChart.xAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
+                var maxTicksNum = 15;
+                var timeStep = 60 * 60;
+                while (timeStep < rowGroup.top(1)[0].value / maxTicksNum)
+                {
+                    timeStep += 60 * 60;
+                }
+                var timeTickValues = [timeStep];
+                while(Math.max.apply(Math, timeTickValues) < rowGroup.top(1)[0].value - timeStep * 0.95)
+                {
+                    timeTickValues.push(Math.max.apply(Math, timeTickValues) + timeStep);
+                }
+                rowChart.xAxis().tickValues(timeTickValues);
+                break;
+            case 'characters':
+                rowChart.xAxis().tickFormat((d, i) => { return d });
+                rowChart.xAxis().tickValues(null);
+                break;
+            default:
+                console.log('Unknown immersion unit')
+        }
     }
     
     d3.select('#date-unit').on('change', () => 
     {
         drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+        dc.renderAll();
     });
     d3.select('#immersion-unit').on('change', () => 
     {
         drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+        drawRowChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+        dc.renderAll();
     });
 
     drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+    drawRowChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
 
     const charts = [chart3, chart4, timelineChart];
     let broadcasting = false; // don't repropogate (infinite loop)
