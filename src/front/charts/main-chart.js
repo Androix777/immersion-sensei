@@ -3,7 +3,7 @@ import * as immersionsTableReadOnly from '../tables/immersions-table-read-only.j
 export async function create(data, worksDataDict, tagsDataDict)
 {
     var rowChart = new dc.RowChart("#row-chart");
-    var charactersSumChart = new dc.BarChart('#characters-sum-chart');
+    var timelineChart = new dc.BarChart('#timeline-chart');
     var chart3 = new dc.BarChart('#chart3');
     var chart4 = new dc.BarChart('#chart4');
 
@@ -146,9 +146,9 @@ export async function create(data, worksDataDict, tagsDataDict)
         .attr('selected', (d) => { return d === 'Characters' ? '' : null });
     
     //variable bar width chart
-    function drawCharactersSumChart(dateUnit, immersionUnit)
+    function drawTimeline(dateUnit, immersionUnit)
     {
-        var charactersSumGroupStackedInterval = dateDimension.group(dateUnit).reduce(
+        var timelineGroup = dateDimension.group(dateUnit).reduce(
             (p, v) =>
             {
                 p[v.work_id] = (p[v.work_id] || 0) + v[immersionUnit];
@@ -163,7 +163,7 @@ export async function create(data, worksDataDict, tagsDataDict)
         );
         
         var timeMargin = 1000 * 60 * 60 * 24 * (1 * +(dateUnit == d3.timeDay) + 7 * +(dateUnit == d3.timeWeek) + 30 * +(dateUnit == d3.timeMonth) + 365 * +(dateUnit == d3.timeYear));
-        charactersSumChart
+        timelineChart
             .width(null)
             .height(480)
             .margins(margins)
@@ -171,17 +171,17 @@ export async function create(data, worksDataDict, tagsDataDict)
             .elasticY(true)
             .dimension(dateDimension)
             .xUnits(dateUnit.range)
-            .group(charactersSumGroupStackedInterval, '' + worksIDList[0], sel_stack(worksIDList[0]))
+            .group(timelineGroup, '' + worksIDList[0], sel_stack(worksIDList[0]))
             .barPadding(0.1)
             .centerBar(true);
         
-        charactersSumChart.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
+        timelineChart.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
 
         switch(immersionUnit)
         {
             case 'time':
                 var timeSumGroup = dateDimension.group(dateUnit).reduceSum(function (d) {return d.time});
-                charactersSumChart.yAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
+                timelineChart.yAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
                 var maxTicksNum = 20;
                 var timeStep = 60 * 60;
                 while (timeStep < timeSumGroup.top(1)[0].value / maxTicksNum)
@@ -193,11 +193,11 @@ export async function create(data, worksDataDict, tagsDataDict)
                 {
                     timeTickValues.push(Math.max.apply(Math, timeTickValues) + timeStep);
                 }
-                charactersSumChart.yAxis().tickValues(timeTickValues);
+                timelineChart.yAxis().tickValues(timeTickValues);
                 break;
             case 'characters':
-                charactersSumChart.yAxis().tickFormat((d, i) => { return d });
-                charactersSumChart.yAxis().tickValues(null);
+                timelineChart.yAxis().tickFormat((d, i) => { return d });
+                timelineChart.yAxis().tickValues(null);
                 break;
             default:
                 console.log('Unknown immersion unit')
@@ -205,7 +205,7 @@ export async function create(data, worksDataDict, tagsDataDict)
 
         for(let i = 1; i < worksIDList.length; ++i)
         {
-            charactersSumChart.stack(charactersSumGroupStackedInterval, '' + worksIDList[i], sel_stack(worksIDList[i]));
+            timelineChart.stack(timelineGroup, '' + worksIDList[i], sel_stack(worksIDList[i]));
         }
 
         dc.renderAll();
@@ -213,16 +213,16 @@ export async function create(data, worksDataDict, tagsDataDict)
     
     d3.select('#date-unit').on('change', () => 
     {
-        drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+        drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     });
     d3.select('#immersion-unit').on('change', () => 
     {
-        drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+        drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     });
 
-    drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+    drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
 
-    const charts = [chart3, chart4, charactersSumChart];
+    const charts = [chart3, chart4, timelineChart];
     let broadcasting = false; // don't repropogate (infinite loop)
     for(const chartA of charts)
     {
