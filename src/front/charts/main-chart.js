@@ -121,7 +121,7 @@ export async function create(data, worksDataDict, tagsDataDict)
         chart4.stack(charactersSumGroupStacked, '' + worksIDList[i], sel_stack(worksIDList[i]));
     }
 
-    //intervals
+    //date units
     var dateUnits = {
         Days: d3.timeDay,
         Weeks: d3.timeWeek,
@@ -133,19 +133,30 @@ export async function create(data, worksDataDict, tagsDataDict)
         .enter().append('option')
         .text(function(d) { return d; })
         .attr('selected', function(d) { return d === 'Days' ? '' : null; });
-
+    
+    //immersion units
+    var immersionUnits = {
+        Characters: 'characters',
+        Time: 'time'
+    };
+    d3.select('#immersion-unit').selectAll('option')
+        .data(Object.keys(immersionUnits))
+        .enter().append('option')
+        .text((d) => { return d; })
+        .attr('selected', (d) => { return d === 'Characters' ? '' : null });
+    
     //variable bar width chart
-    function drawCharactersSumChart(dateUnit)
+    function drawCharactersSumChart(dateUnit, immersionUnit)
     {
         var charactersSumGroupStackedInterval = dateDimension.group(dateUnit).reduce(
             (p, v) =>
             {
-                p[v.work_id] = (p[v.work_id] || 0) + v.characters;
+                p[v.work_id] = (p[v.work_id] || 0) + v[immersionUnit];
                 return p;
             },
             (p, v) =>
             {
-                p[v.work_id] = (p[v.work_id] || 0) - v.characters;
+                p[v.work_id] = (p[v.work_id] || 0) - v[immersionUnit];
                 return p;
             },
             () => ({})
@@ -166,6 +177,32 @@ export async function create(data, worksDataDict, tagsDataDict)
         
         charactersSumChart.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
 
+        switch(immersionUnit)
+        {
+            case 'time':
+                var timeSumGroup = dateDimension.group(dateUnit).reduceSum(function (d) {return d.time});
+                charactersSumChart.yAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
+                var maxTicksNum = 20;
+                var timeStep = 60 * 60;
+                while (timeStep < timeSumGroup.top(1)[0].value / maxTicksNum)
+                {
+                    timeStep += 60 * 60;
+                }
+                var timeTickValues = [timeStep];
+                while(Math.max.apply(Math, timeTickValues) < timeSumGroup.top(1)[0].value - timeStep * 0.95)
+                {
+                    timeTickValues.push(Math.max.apply(Math, timeTickValues) + timeStep);
+                }
+                charactersSumChart.yAxis().tickValues(timeTickValues);
+                break;
+            case 'characters':
+                charactersSumChart.yAxis().tickFormat((d, i) => { return d });
+                charactersSumChart.yAxis().tickValues(null);
+                break;
+            default:
+                console.log('Unknown immersion unit')
+        }
+
         for(let i = 1; i < worksIDList.length; ++i)
         {
             charactersSumChart.stack(charactersSumGroupStackedInterval, '' + worksIDList[i], sel_stack(worksIDList[i]));
@@ -176,10 +213,14 @@ export async function create(data, worksDataDict, tagsDataDict)
     
     d3.select('#date-unit').on('change', () => 
     {
-        drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value]);
+        drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+    });
+    d3.select('#immersion-unit').on('change', () => 
+    {
+        drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     });
 
-    drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value]);
+    drawCharactersSumChart(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
 
     const charts = [chart3, chart4, charactersSumChart];
     let broadcasting = false; // don't repropogate (infinite loop)
