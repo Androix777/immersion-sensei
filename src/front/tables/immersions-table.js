@@ -8,7 +8,7 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
     var rowMenu = 
     [
         {
-            label:"<i class='fas fa-trash'></i> Add Row",
+            label:"Add Row",
             action:function(e, row)
             {
                 if (onTryAddRow)
@@ -18,7 +18,7 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
             }
         },
         {
-            label:"<i class='fas fa-trash'></i> Delete Row",
+            label:"Delete Row",
             action:function(e, row)
             {
                 if (onTryDeleteRow)
@@ -32,7 +32,7 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
     var headerIDMenu = 
     [
         {
-            label:"<i class='fas fa-trash'></i> Add Row",
+            label:"Add Row",
             action:function(e, column)
             {
                 if (onTryAddRow)
@@ -110,6 +110,10 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
                 field:"work_id", 
                 formatter: (cell, formatterParams, onRendered) => 
                 {
+                    if(cell.getValue() == "")
+                    {
+                        console.log(cell)
+                    }
                     return worksData[cell.getValue()];
                 },
                 editor:"list",
