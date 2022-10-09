@@ -17,7 +17,7 @@
         "luxon": "^2.4.0",
         "notiflix": "^3.2.5",
         "sqlite3": "^5.0.8",
-        "tabulator-tables": "^5.2.7"
+        "tabulator-tables": "^5.4.1"
     },
     "devDependencies": {
         "copyfiles": "^2.4.1",
