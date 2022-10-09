@@ -38,12 +38,16 @@
             <div id="charts" class="tabcontent">
                 <select id='date-unit'></select>
                 <select id='immersion-unit'></select>
-                <div id="timeline-chart"></div>
-                <span >
-                    <div id="works-chart"></div>
-                    <div id="week-days-chart"></div>
-                </span>   
-                <div id="immersions-table-charts"></div>
+                <div style="height: 480px" id="timeline-chart"></div>
+                <div style="height: 480px">
+                    <div style="float: left; width:50%; height:100%" id="works-chart"></div>
+                    <div style="float: left; width:50%; height:100%;" id="days-of-week-chart"></div>
+                </div>
+                <div style="height: 480px">
+                    <div style="float: left; width:50%; height:100%; background: blue;" id="work-types-chart"></div>
+                    <div style="float: left; width:50%; height:100%; background:red;" id="tags-chart"></div>
+                </div>
+                <div style="clear:both;" id="immersions-table-charts"></div>
             </div>
         </div>
         <script type="module" src="index.js"></script>
