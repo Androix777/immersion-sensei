@@ -8,6 +8,11 @@ export async function show()
 {
     var immersionsData = await window.api.getImmersions();
 
+    immersionsData.forEach(element => 
+    {
+        element["work_id"] = "" + element["work_id"];
+    });
+
     var worksData = await window.api.getWorks();
     var worksDataDict = {};
     worksData.forEach(element => 
