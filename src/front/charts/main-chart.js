@@ -2,7 +2,7 @@ import * as immersionsTableReadOnly from '../tables/immersions-table-read-only.j
 
 export async function create(data, worksDataDict, tagsDataDict)
 {
-    var rowChart = new dc.RowChart("#row-chart");
+    var worksChart = new dc.RowChart("#works-chart");
     var timelineChart = new dc.BarChart('#timeline-chart');
 
     var margins = {top: 10, bottom: 50, left: 75, right: 0};
@@ -86,7 +86,7 @@ export async function create(data, worksDataDict, tagsDataDict)
         var timeMargin = 2 * 1000 * 60 * 60 * 24 * (1 * +(dateUnit == d3.timeDay) + 7 * +(dateUnit == d3.timeWeek) + 30 * +(dateUnit == d3.timeMonth) + 365 * +(dateUnit == d3.timeYear));
         timelineChart
             .width(null)
-            .height(480)
+            .height(null)
             .margins(margins)
             .x(d3.scaleTime().domain([new Date(minDate - timeMargin), new Date(maxDate + timeMargin)]))
             .elasticY(true)
@@ -141,13 +141,13 @@ export async function create(data, worksDataDict, tagsDataDict)
         }
     }
 
-    //row chart
-    function drawRowChart(immersionUnit)
+    //works chart
+    function drawWorksChart(immersionUnit)
     {
         var rowGroup = workDimension.group().reduceSum(function (d) {return d[immersionUnit];});
-        rowChart
+        worksChart
             .width(null)
-            .height(480)
+            .height(null)
             .margins(margins)
             .elasticX(true)
             .dimension(workDimension)
@@ -163,7 +163,7 @@ export async function create(data, worksDataDict, tagsDataDict)
         switch(immersionUnit)
         {
             case 'time':
-                rowChart.xAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
+                worksChart.xAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
                 var maxTicksNum = 15;
                 var timeStep = 60 * 60;
                 while (timeStep < rowGroup.top(1)[0].value / maxTicksNum)
@@ -175,11 +175,11 @@ export async function create(data, worksDataDict, tagsDataDict)
                 {
                     timeTickValues.push(Math.max.apply(Math, timeTickValues) + timeStep);
                 }
-                rowChart.xAxis().tickValues(timeTickValues);
+                worksChart.xAxis().tickValues(timeTickValues);
                 break;
             case 'characters':
-                rowChart.xAxis().tickFormat((d, i) => { return d });
-                rowChart.xAxis().tickValues(null);
+                worksChart.xAxis().tickFormat((d, i) => { return d });
+                worksChart.xAxis().tickValues(null);
                 break;
             default:
                 console.log('Unknown immersion unit')
@@ -194,12 +194,12 @@ export async function create(data, worksDataDict, tagsDataDict)
     d3.select('#immersion-unit').on('change', () => 
     {
         drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
-        drawRowChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+        drawWorksChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
         dc.renderAll();
     });
 
     drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
-    drawRowChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+    drawWorksChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
 
     const charts = [timelineChart];
     let broadcasting = false; // don't repropogate (infinite loop)
