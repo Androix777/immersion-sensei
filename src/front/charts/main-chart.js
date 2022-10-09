@@ -7,9 +7,9 @@ export async function create(data, worksDataDict, tagsDataDict)
 
     var margins = {top: 10, bottom: 50, left: 75, right: 0};
 
-    var ndx = crossfilter(data);
-    var workDimension = ndx.dimension((d) => { return d.work_id; });
-    var dateDimension = ndx.dimension((d) => { return Date.parse(d.date); });
+    var cf = crossfilter(data);
+    var workDimension = cf.dimension((d) => { return d.work_id; });
+    var dateDimension = cf.dimension((d) => { return Date.parse(d.date); });
 
     //dynamic date range
     var maxDate = Number.NEGATIVE_INFINITY
@@ -217,10 +217,10 @@ export async function create(data, worksDataDict, tagsDataDict)
     }
 
     var immersionsTable = immersionsTableReadOnly.create(data, worksDataDict, tagsDataDict, "#immersions-table-charts");
-    ndx.onChange(eventType => 
+    cf.onChange(eventType => 
     {
         console.log(eventType);
-        immersionsTable.setFilter("id", "in", ndx.allFiltered().map(({id})=>id));
+        immersionsTable.setFilter("id", "in", cf.allFiltered().map(({id})=>id));
     });
 
     dc.renderAll();
