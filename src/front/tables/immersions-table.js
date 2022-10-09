@@ -110,10 +110,6 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
                 field:"work_id", 
                 formatter: (cell, formatterParams, onRendered) => 
                 {
-                    if(cell.getValue() == "")
-                    {
-                        console.log(cell)
-                    }
                     return worksData[cell.getValue()];
                 },
                 editor:"list",

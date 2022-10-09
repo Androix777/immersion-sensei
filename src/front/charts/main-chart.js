@@ -103,7 +103,6 @@ export async function create(data, worksDataDict, tagsDataDict)
                 });
                 chart.selectAll('g.dc-legend-item rect').style('fill', function (d) 
                 {
-                    console.log(d)
                     return colorMap[d.name];
                 });
             });
