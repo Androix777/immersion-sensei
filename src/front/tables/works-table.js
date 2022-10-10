@@ -75,7 +75,47 @@ export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTr
             {
                 title:"Color",
                 field:"color",
-                editor:"input"
+                formatter:'color',
+                editor:function(cell, onRendered, success, cancel)
+                {
+                    var cellValue = cell.getValue();
+                    var input = document.createElement("input");
+                
+                    input.setAttribute("type", "color");
+                    input.setAttribute("value", cellValue);
+
+                    input.style.height = "100%";
+                    input.style.width = "100%";
+
+                    onRendered(() =>
+                    {
+                        input.focus();
+                    });
+
+                    function onChange()
+                    {
+                        if(input.value != cellValue)
+                        {
+                            success(input.value);
+                        }
+                        else
+                        {
+                            cancel();
+                        }
+                    }
+                    input.addEventListener("blur", onChange);
+                    input.addEventListener("keydown", (e) =>
+                    {
+                        if(e.keyCode == 13){
+                            onChange();
+                        }
+                
+                        if(e.keyCode == 27){
+                            cancel();
+                        }
+                    });
+                    return input;
+                }
             }
         ],
     });
