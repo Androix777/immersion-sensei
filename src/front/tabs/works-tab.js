@@ -7,7 +7,7 @@ var worksTable = undefined;
 export async function show()
 {
     var response = await window.api.getWorks()
-    worksTable = createWorksTable(response, "#works-table", onTryAddRow, onTryDeleteRow)
+    worksTable = createWorksTable(response, "#works-table", onTryAddRow, onTryDeleteRow, onTryAutoColor)
 
     worksTable.on("cellEdited", async (cell) =>
     {
@@ -72,6 +72,37 @@ export async function show()
             },
             () => {},
           );
+    }
+
+    async function onTryAutoColor(row)
+    {
+        var newColor = autoColorRGB(row.getData().title);
+        var response = await window.api.changeWork(row.getData().id, 'color', newColor);
+        if(response != 0)
+        {
+            Notiflix.Notify.success('Set auto color', currentNotifyOptions);
+            var rowData = row.getData();
+            rowData.color = newColor;
+            worksTable.updateRow(row, rowData);
+        }
+        else
+        {
+            Notiflix.Notify.failure('Failed to set auto color', currentNotifyOptions); 
+        }
+    }
+
+    function autoColorRGB(name)
+    {
+        var strHash = name.split('').reduce((acc, char) => {return char.charCodeAt(0) + ((acc << 5) - acc );}, 0);
+        var color = (strHash & 0x00FFFFFF).toString(16).toUpperCase();
+        return '#' + '00000'.substring(0, 6 - color.length) + color;
+    }
+
+    function autoColorHSL(name)
+    {
+        var strHash = name.split('').reduce((acc, char) => {return char.charCodeAt(0) + ((acc << 5) - acc );}, 0);
+        var color = Math.abs(strHash % 360);
+        return 'hsl(' + color + ', 80%, 40%)';
     }
 }
 

@@ -80,7 +80,7 @@ document.getElementById('import').addEventListener("click", () =>
 async function importCSVtoSQL()
 {
     var data = await importCSV("../../user_data/importPlus.csv");
-    var works = (Array.from(new Set(data.map(immersion => immersion.work)))).map(x => ({'title': x}));
+    var works = (Array.from(new Set(data.map(immersion => immersion.work)))).map(x => ({'title': x, 'color': autoColorRGB(x)}));
     var response = await window.api.importWorks(works);
 
     var worksData = await window.api.getWorks();
@@ -102,6 +102,13 @@ async function importCSVtoSQL()
 
     var response = await window.api.importImmersions(data);
     console.log(response);
+
+    function autoColorRGB(name)
+    {
+        var strHash = name.split('').reduce((acc, char) => {return char.charCodeAt(0) + ((acc << 5) - acc );}, 0);
+        var color = (strHash & 0x00FFFFFF).toString(16).toUpperCase();
+        return '#' + '00000'.substring(0, 6 - color.length) + color;
+    }
 }
 
 async function submit(event)

@@ -1,10 +1,10 @@
-export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined)
+export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onTryAutoColor = undefined)
 {
 
     var rowMenu = 
     [
         {
-            label:"<i class='fas fa-trash'></i> Add Row",
+            label:"Add Row",
             action:function(e, row)
             {
                 if (onTryAddRow)
@@ -14,12 +14,22 @@ export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTr
             }
         },
         {
-            label:"<i class='fas fa-trash'></i> Delete Row",
+            label:"Delete Row",
             action:function(e, row)
             {
                 if (onTryDeleteRow)
                 {
                     onTryDeleteRow(row);
+                }
+            }
+        },
+        {
+            label:"Auto Color",
+            action:function(e, row)
+            {
+                if(onTryAutoColor)
+                {
+                    onTryAutoColor(row);
                 }
             }
         }
@@ -28,7 +38,7 @@ export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTr
     var headerIDMenu = 
     [
         {
-            label:"<i class='fas fa-trash'></i> Add Row",
+            label:"Add Row",
             action:function(e, column)
             {
                 if (onTryAddRow)
