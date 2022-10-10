@@ -93,20 +93,23 @@ export function tagStringFormatter(cell, formatterParams, onRendered)
     var newValue = "";
     var cellValue = cell.getValue();
 
-    cellValue.forEach(
-        element => 
-        {
-            if(element in tagsData)
-            {
-                newValue += tagsData[element] + ", ";
-            }                            
-        }
-    );
-    
-    if(newValue.slice(-2) == ', ')
+    if(cellValue)
     {
-        newValue = newValue.slice(0, -2);
+        cellValue.forEach(
+            element => 
+            {
+                if(element in tagsData)
+                {
+                    newValue += tagsData[element] + ", ";
+                }                            
+            }
+        );
+        
+        if(newValue.slice(-2) == ', ')
+        {
+            newValue = newValue.slice(0, -2);
+        }
     }
-
+    
     return newValue;
 }
