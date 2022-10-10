@@ -60,8 +60,13 @@ export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTr
             {
                 title:"Title", 
                 field:"title", 
-                editor: "input"
+                editor:"input"
             },
+            {
+                title:"Color",
+                field:"color",
+                editor:"input"
+            }
         ],
     });
 

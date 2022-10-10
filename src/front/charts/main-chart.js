@@ -1,6 +1,6 @@
 import * as immersionsTableReadOnly from '../tables/immersions-table-read-only.js'
 
-export async function create(data, worksDataDict, tagsDataDict)
+export async function create(data, worksDataDict, tagsDataDict, worksColors)
 {
     var timelineChart = new dc.BarChart('#timeline-chart');
     var worksChart = new dc.RowChart("#works-chart");
@@ -33,12 +33,10 @@ export async function create(data, worksDataDict, tagsDataDict)
     var worksIDList = [];
     var colorMap = { };
 
-    var index = 0;
     workDimension.group().all().forEach((item) => 
     {
         worksIDList.push(item['key']);
-        colorMap[item['key']] = d3.schemeCategory10[(index+1) % 10];
-        index++;
+        colorMap[item['key']] = worksColors[item['key']];
     })
     function sel_stack(i)
     {

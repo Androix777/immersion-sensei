@@ -137,7 +137,7 @@ class database
     {
         let response = await database.knex
             .from("works")
-            .select("id", "title")
+            .select("id", "title", "color")
         return response
     }
 
@@ -145,7 +145,7 @@ class database
     {
         let response = await database.knex
             .from("works")
-            .select("id", "title")
+            .select("id", "title", "color")
             .where('id', '=', id)
         return response
     }
@@ -156,7 +156,8 @@ class database
             .from("works")
             .insert(
             {
-                title: "新しい作品"
+                title: "新しい作品",
+                color: "#555555"
             })
             .returning('id')
         return response;
