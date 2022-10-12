@@ -159,6 +159,25 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors)
                     return colorMap[d.key];
                 }
             )
+            .on('pretransition', (chart) =>
+            {
+                var bars = timelineChart.selectAll('rect.bar')
+                worksChart.selectAll('g.row')
+                .on('mouseover', d => 
+                {
+                    var index = d.path[0].__data__.key
+                    bars
+                    .classed('fadeout', (x) => 
+                    {
+                        return index != x.layer
+                    })
+                })
+                .on('mouseout', d => 
+                {
+                    bars
+                    .classed('fadeout', false)
+                })
+            })
             .label(p => worksDataDict[p.key]);
         
         switch(immersionUnit)
