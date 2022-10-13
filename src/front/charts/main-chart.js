@@ -107,8 +107,6 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors)
                     return colorMap[d.name];
                 });
             });
-        
-        timelineChart.legend(dc.legend().x(90).legendText((item) => {return worksDataDict[item.name]}));
 
         switch(immersionUnit)
         {
@@ -263,21 +261,6 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors)
     drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     drawWorksChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     drawDaysOfWeekChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
-
-    const charts = [timelineChart];
-    let broadcasting = false; // don't repropogate (infinite loop)
-    for(const chartA of charts)
-    {
-        chartA.on('filtered', function(chart, filter) {
-            if(broadcasting) return;
-            broadcasting = true;
-            for(const chartB of charts.filter(chartB => chartB !== chartA))
-            {
-                chartB.replaceFilter(filter);
-            } 
-            broadcasting = false;
-        })
-    }
 
     var immersionsTable = immersionsTableReadOnly.create(data, worksDataDict, tagsDataDict, "#immersions-table-charts");
     cf.onChange(eventType => 
