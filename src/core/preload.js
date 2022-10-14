@@ -115,6 +115,12 @@ async function deleteTag(id)
     return response;
 }
 
+async function importTags(data)
+{
+    let response = await database.importTags(data);
+    return response;
+}
+
 async function addImmersionTagLinks(immersionID, tagIDList)
 {
     let response = await database.addImmersionTagLinks(immersionID, tagIDList);
@@ -150,6 +156,7 @@ contextBridge.exposeInMainWorld
         addTag,
         changeTag,
         deleteTag,
+        importTags,
         addImmersionTagLinks,
         deleteImmersionTagLinks
     }

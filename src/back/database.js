@@ -237,6 +237,15 @@ class database
         return response
     }
 
+    static async importTags(data)
+    {
+        let response = await database.knex
+            .from("tags")
+            .insert(data)
+            .returning('id')
+        return response;
+    }
+
     static async addImmersionTagLinks(immersionID, tagIDList)
     {
         var insertList = [];

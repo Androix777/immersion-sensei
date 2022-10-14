@@ -81,6 +81,26 @@ async function importCSVtoSQL()
 {
     var data = await importCSV("../../user_data/importPlus.csv");
     var works = (Array.from(new Set(data.map(immersion => immersion.work)))).map(x => ({'title': x, 'color': autoColorRGB(x)}));
+    
+    var tags = []
+    data.map(immersion =>
+    {
+        if(!immersion.tags) 
+        {
+            return;
+        }
+        let curTags = immersion.tags.split(' ');
+        curTags.forEach((tag) =>
+        {
+            if(!(tags.includes(tag)))
+            {
+                tags.push(tag);
+            }
+        });
+    });
+    tags = tags.map(x => ({'name': x}));
+    
+    var response = await window.api.importTags(tags)
     var response = await window.api.importWorks(works);
 
     var worksData = await window.api.getWorks();
@@ -90,6 +110,13 @@ async function importCSVtoSQL()
         worksDataDict[element["title"]] = element["id"];
     });
 
+    var tagsData = await window.api.getTags();
+    var tagsDataDict = {};
+    tagsData.forEach(element =>
+    {
+        tagsDataDict[element['name']] = element['id'];
+    })
+
     for (let i = 0; i < data.length; i++)
     {
         data[i]['date'] = luxon.DateTime.fromFormat(data[i]['date'], 'yyyy/MM/dd').toFormat('yyyy-MM-dd');
@@ -98,10 +125,14 @@ async function importCSVtoSQL()
         data[i]['work_id'] = worksDataDict[data[i]['work']];
         delete data[i]['work'];
         data[i]["characters"] = data[i]["characters"].replaceAll(' ','');
+        let tags = data[i]['tags'].split(' ').filter((tag) => tag ? true : false);
+        delete data[i]['tags']
+        let lastInserted = await window.api.importImmersions(data[i]);
+        if(tags.length && lastInserted[0])
+        {
+            let response = window.api.addImmersionTagLinks(response[0], tags.map((tag) => tagsDataDict[tag]))
+        }
     }
-
-    var response = await window.api.importImmersions(data);
-    console.log(response);
 
     function autoColorRGB(name)
     {
