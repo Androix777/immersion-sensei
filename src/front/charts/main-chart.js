@@ -5,18 +5,20 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors)
     var timelineChart = new dc.BarChart('#timeline-chart');
     var worksChart = new dc.RowChart("#works-chart");
     var daysOfWeekChart = new dc.RowChart("#days-of-week-chart");
+    var tagsChart = dc.rowChart('#tags-chart');
 
     var margins = {top: 10, bottom: 50, left: 75, right: 0};
 
     var cf = crossfilter(data);
     var workDimension = cf.dimension((d) => { return d.work_id; });
     var dateDimension = cf.dimension((d) => { return Date.parse(d.date); });
+    var tagsDimension = cf.dimension((d) => { return d.tags.length && d.tags[0] ? d.tags : false}, true);
     var dayOfWeekDimension = cf.dimension((d) => { return (new Date(d.date)).getDay()});
     var dayOfWeek = {0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'};
 
     //dynamic date range
-    var maxDate = Number.NEGATIVE_INFINITY
-    var minDate = Number.POSITIVE_INFINITY
+    var maxDate = Number.NEGATIVE_INFINITY;
+    var minDate = Number.POSITIVE_INFINITY;
     dateDimension.group().all().forEach((item) =>
     {
         if(item.key > maxDate)
@@ -244,6 +246,44 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors)
                 console.log('Unknown immersion unit')
         }
     }
+
+    function drawTagsChart(immersionUnit)
+    {
+        var tagsGroup = tagsDimension.group().reduceSum((d) => {return d[immersionUnit];})
+        tagsChart
+            .height(null)
+            .width(null)
+            .margins(margins)
+            .elasticX(true)
+            .dimension(tagsDimension)
+            .group(tagsGroup)
+            .label((d) => tagsDataDict[d.key]);
+        
+        switch(immersionUnit)
+        {
+            case 'time':
+                tagsChart.xAxis().tickFormat((d, i) => {return luxon.Duration.fromObject({seconds:d}).toFormat('h:mm:ss');});
+                var maxTicksNum = 15;
+                var timeStep = 60 * 60;
+                while (timeStep < tagsGroup.top(1)[0].value / maxTicksNum)
+                {
+                    timeStep += 60 * 60;
+                }
+                var timeTickValues = [timeStep];
+                while(Math.max.apply(Math, timeTickValues) < tagsGroup.top(1)[0].value - timeStep * 0.95)
+                {
+                    timeTickValues.push(Math.max.apply(Math, timeTickValues) + timeStep);
+                }
+                tagsChart.xAxis().tickValues(timeTickValues);
+                break;
+            case 'characters':
+                tagsChart.xAxis().tickFormat((d, i) => { return d });
+                tagsChart.xAxis().tickValues(null);
+                break;
+            default:
+                console.log('Unknown immersion unit')
+        }
+    }
     
     d3.select('#date-unit').on('change', () => 
     {
@@ -255,12 +295,14 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors)
         drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
         drawWorksChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
         drawDaysOfWeekChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+        drawTagsChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
         dc.renderAll();
     });
 
     drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     drawWorksChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     drawDaysOfWeekChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+    drawTagsChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
 
     var immersionsTable = immersionsTableReadOnly.create(data, worksDataDict, tagsDataDict, "#immersions-table-charts");
     cf.onChange(eventType => 
