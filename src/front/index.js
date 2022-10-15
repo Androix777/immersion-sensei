@@ -132,7 +132,7 @@ async function importCSVtoSQL()
         let lastInserted = await window.api.importImmersions(data[i]);
         if(tags.length && lastInserted[0])
         {
-            let response = window.api.addImmersionTagLinks(response[0], tags.map((tag) => tagsDataDict[tag]))
+            let response = window.api.addImmersionTagLinks(lastInserted[0], tags.map((tag) => tagsDataDict[tag]))
         }
     }
 
