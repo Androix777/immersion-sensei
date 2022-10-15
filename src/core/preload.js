@@ -169,6 +169,24 @@ async function getImmersionText(id)
     return response;
 }
 
+async function addImmersionText(text)
+{
+    let response = await database.addImmersionText(text);
+    return response;
+}
+
+async function changeImmersionText(id, text)
+{
+    let response = await database.changeImmersionText(id, text);
+    return response;
+}
+
+async function deleteImmersionText(id)
+{
+    let response = await database.deleteImmersionText(id);
+    return response;
+}
+
 contextBridge.exposeInMainWorld
 (
     "api", 
@@ -200,6 +218,9 @@ contextBridge.exposeInMainWorld
         importTags,
         addImmersionTagLinks,
         deleteImmersionTagLinks,
-        getImmersionText
+        getImmersionText,
+        addImmersionText,
+        changeImmersionText,
+        deleteImmersionText
     }
 )

@@ -43,6 +43,10 @@ export async function show()
                 var response = await window.api.addImmersionTagLinks(id, value);
             }
         }
+        else if(column == 'text_of_immersion')
+        {
+            return;
+        }
         else
         {
             var response = await window.api.changeImmersion(id, column, value);
@@ -114,19 +118,51 @@ export async function show()
         var textField = document.createElement('textarea');
         textField.style.height = '95%';
         textField.style.width = '100%';
+        var acceptButton = document.createElement('button');
+        acceptButton.textContent = 'Accept';
+        var deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
         var cancelButton = document.createElement('button');
         cancelButton.textContent = 'Cancel';
 
         var modalContent = document.getElementById('modal-content');
         modalContent.style.height = '75%';
+
         modalContent.appendChild(textField);
+        modalContent.appendChild(acceptButton);
+        modalContent.appendChild(deleteButton);
         modalContent.appendChild(cancelButton);
-        if(cell.getValue() == false)
+
+        if(!cell.getValue())
         {
             textField.textContent = 'No immersion text for immersion ' + cell.getData().id;
+            acceptButton.onclick = async () =>
+            {
+                var newID = await window.api.addImmersionText(textField.value);
+                if(newID)
+                {
+                    var response = await window.api.changeImmersion(cell.getData().id, 'text_of_immersion_id', newID[0]);
+                    if(response)
+                    {
+                        Notiflix.Notify.success('Immersion text added', currentNotifyOptions);
+                        cell.setValue(newID);
+                    }
+                }
+                closeTextViewer();
+            }
+            deleteButton.disabled = true;
         }
         else
         {
+            acceptButton.onclick = async () =>
+            {
+                var response = await window.api.changeImmersionText(cell.getData().text_of_immersion_id, textField.value);
+                if(response)
+                {
+                    Notiflix.Notify.success('Immersion text changed', currentNotifyOptions);
+                }
+                closeTextViewer();
+            }
             var immersionText = await window.api.getImmersionText(cell.getData().text_of_immersion_id);
             textField.textContent = immersionText[0]['text'];
         }
@@ -147,6 +183,8 @@ export async function show()
         {
             modalBackground.style.display = 'none';
             textField.remove();
+            acceptButton.remove();
+            deleteButton.remove();
             cancelButton.remove();
         }
     }

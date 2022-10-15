@@ -96,13 +96,7 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
             },
             {
                 title:"Text", 
-                field:"text_of_immersion", 
-                formatter:"tickCross",
-                width:100,
-                mutator:function(value, data) 
-                {
-                    return data.text_of_immersion_id != null;
-                },
+                field:"text_of_immersion_id",
                 cellClick: onImmersionTextClick,
             },
             {

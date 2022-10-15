@@ -326,6 +326,39 @@ class database
             .select('text')
         return response;
     }
+
+    static async addImmersionText(text)
+    {
+        let response = await database.knex
+            .from("texts_of_immersions")
+            .insert(
+            {
+                text: text
+            })
+            .returning('id')
+        return response;
+    }
+
+    static async changeImmersionText(id, text)
+    {
+        let response = await database.knex
+            .from("texts_of_immersions")
+            .where({ id: id})
+            .update(
+            {
+                text: text
+            })
+        return response;
+    }
+
+    static async deleteImmersionText(id)
+    {
+        let response = await database.knex
+            .from("texts_of_immersions")
+            .where({ id: id })
+            .del()
+        return response;
+    }
 }
 
 exports.database = database
