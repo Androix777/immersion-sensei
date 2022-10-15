@@ -1,4 +1,4 @@
-export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onTryAutoColor = undefined)
+export function createWorksTable(tableData, workTypesData, divID, onTryAddRow = undefined, onTryDeleteRow = undefined, onTryAutoColor = undefined)
 {
 
     var rowMenu = 
@@ -116,6 +116,19 @@ export function createWorksTable(tableData, divID, onTryAddRow = undefined, onTr
                     });
                     return input;
                 }
+            },
+            {
+                title:"Type",
+                field:"type_id",
+                formatter: (cell, formatterParams, onRendered) => 
+                {
+                    return workTypesData[cell.getValue()];
+                },
+                editor:"list",
+                editorParams:
+                {
+                    values: workTypesData,
+                },
             }
         ],
     });

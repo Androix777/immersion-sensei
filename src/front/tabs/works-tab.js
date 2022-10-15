@@ -6,8 +6,20 @@ var worksTable = undefined;
 
 export async function show()
 {
-    var response = await window.api.getWorks()
-    worksTable = createWorksTable(response, "#works-table", onTryAddRow, onTryDeleteRow, onTryAutoColor)
+    var worksData = await window.api.getWorks()
+    worksData.forEach(element => 
+    {
+        element["type_id"] = "" + element["type_id"];
+    });
+
+    var workTypesData = await window.api.getWorkTypes()
+    var workTypesDataDict = {};
+    workTypesData.forEach(element => 
+    {
+        workTypesDataDict[element["id"]] = element["name"]
+    });
+
+    worksTable = createWorksTable(worksData, workTypesDataDict, "#works-table", onTryAddRow, onTryDeleteRow, onTryAutoColor)
 
     worksTable.on("cellEdited", async (cell) =>
     {
