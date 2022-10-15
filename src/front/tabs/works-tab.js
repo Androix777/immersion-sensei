@@ -18,6 +18,7 @@ export async function show()
     {
         workTypesDataDict[element["id"]] = element["name"]
     });
+    workTypesDataDict[null] = "No type";
 
     worksTable = createWorksTable(worksData, workTypesDataDict, "#works-table", onTryAddRow, onTryDeleteRow, onTryAutoColor)
 
@@ -26,6 +27,11 @@ export async function show()
         var id = cell.getData().id;
         var column = cell.getColumn().getField();
         var value = cell.getValue();
+
+        if(column == "type_id")
+        {
+            value = (value == "null" || value == "" ? null : value)
+        }
 
         var response = await window.api.changeWork(id, column, value);
 
