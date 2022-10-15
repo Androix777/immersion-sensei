@@ -171,7 +171,7 @@ export async function show()
                 if(response)
                 {
                     Notiflix.Notify.success('Immersion text deleted', currentNotifyOptions);
-                    cell.setValue(undefined);
+                    cell.setValue(null);
                 }
                 closeTextViewer();
             }
