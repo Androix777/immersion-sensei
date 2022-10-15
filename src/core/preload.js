@@ -163,6 +163,12 @@ async function deleteImmersionTagLinks(id)
     return response;
 }
 
+async function getImmersionText(id)
+{
+    let response = await database.getImmersionText(id);
+    return response;
+}
+
 contextBridge.exposeInMainWorld
 (
     "api", 
@@ -193,6 +199,7 @@ contextBridge.exposeInMainWorld
         deleteTag,
         importTags,
         addImmersionTagLinks,
-        deleteImmersionTagLinks
+        deleteImmersionTagLinks,
+        getImmersionText
     }
 )

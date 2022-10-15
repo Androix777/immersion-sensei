@@ -315,7 +315,16 @@ class database
             .from("immersions_tags")
             .where({ immersion_id: id })
             .del()
-        return response
+        return response;
+    }
+
+    static async getImmersionText(id)
+    {
+        let response = await database.knex
+            .from("texts_of_immersions")
+            .where({ id: id })
+            .select('text')
+        return response;
     }
 }
 

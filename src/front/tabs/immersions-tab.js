@@ -106,15 +106,48 @@ export async function show()
           );
     }
 
-    function onImmersionTextClick(e, cell)
+    async function onImmersionTextClick(e, cell)
     {
+        var modalBackground = document.getElementById('modal-background');
+        modalBackground.style.display = 'block';
+        
+        var textField = document.createElement('textarea');
+        textField.style.height = '95%';
+        textField.style.width = '100%';
+        var cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Cancel';
+
+        var modalContent = document.getElementById('modal-content');
+        modalContent.style.height = '75%';
+        modalContent.appendChild(textField);
+        modalContent.appendChild(cancelButton);
         if(cell.getValue() == false)
         {
-            Notiflix.Notify.warning(`NOT IMPLEMENTED FOR No text in ${cell.getData().id}`, currentNotifyOptions);
+            textField.textContent = 'No immersion text for immersion ' + cell.getData().id;
         }
         else
         {
-            Notiflix.Notify.warning(`NOT IMPLEMENTED FOR Text in ${cell.getData().id}`, currentNotifyOptions);
+            var immersionText = await window.api.getImmersionText(cell.getData().text_of_immersion_id);
+            textField.textContent = immersionText[0]['text'];
+        }
+
+        window.onclick = (event) =>
+        {
+            if (event.target == modalBackground)
+            {
+                closeTextViewer();
+            }
+        };
+        cancelButton.onclick = () =>
+        {
+            closeTextViewer();
+        };
+        
+        function closeTextViewer()
+        {
+            modalBackground.style.display = 'none';
+            textField.remove();
+            cancelButton.remove();
         }
     }
 }
