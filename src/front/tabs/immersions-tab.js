@@ -43,7 +43,7 @@ export async function show()
                 var response = await window.api.addImmersionTagLinks(id, value);
             }
         }
-        else if(column == 'text_of_immersion')
+        else if(column == 'text_of_immersion_id')
         {
             return;
         }
@@ -165,6 +165,16 @@ export async function show()
             }
             var immersionText = await window.api.getImmersionText(cell.getData().text_of_immersion_id);
             textField.textContent = immersionText[0]['text'];
+            deleteButton.onclick = async() =>
+            {
+                var response = await window.api.deleteImmersionText(cell.getValue());
+                if(response)
+                {
+                    Notiflix.Notify.success('Immersion text deleted', currentNotifyOptions);
+                    cell.setValue(undefined);
+                }
+                closeTextViewer();
+            }
         }
 
         window.onclick = (event) =>
