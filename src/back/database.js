@@ -137,7 +137,7 @@ class database
     {
         let response = await database.knex
             .from("works")
-            .select("id", "title", "color")
+            .select("id", "title", "color", "type_id")
         return response
     }
 
@@ -145,7 +145,7 @@ class database
     {
         let response = await database.knex
             .from("works")
-            .select("id", "title", "color")
+            .select("id", "title", "color", "type_id")
             .where('id', '=', id)
         return response
     }
@@ -188,6 +188,53 @@ class database
             .insert(data)
             .returning('id')
         return response;
+    }
+
+    static async getWorkTypes()
+    {
+        let response = await database.knex
+            .from("types_of_works")
+            .select("id", "name")
+        return response
+    }
+
+    static async getWorkType(id)
+    {
+        let response = await database.knex
+            .from("types_of_works")
+            .select("id", "name")
+            .where('id', '=', id)
+        return response
+    }
+
+    static async addWorkType()
+    {
+        let response = await database.knex
+            .from("types_of_works")
+            .insert(
+            {
+                name: "タイプ"
+            })
+            .returning('id')
+        return response;
+    }
+
+    static async changeWorkType(id, column, value)
+    {
+        let response = await database.knex
+            .from("types_of_works")
+            .where('id', '=', id)
+            .update(column, value);
+            return response
+    }
+
+    static async deleteWorkType(id)
+    {
+        let response = await database.knex
+            .from("types_of_works")
+            .where({ id: id })
+            .del()
+        return response
     }
 
     static async getTags()

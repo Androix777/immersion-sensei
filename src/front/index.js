@@ -2,6 +2,7 @@ import * as immersionsTab from './tabs/immersions-tab.js'
 import * as worksTab from './tabs/works-tab.js'
 import * as tagsTab from './tabs/tags-tab.js'
 import * as chartTab from './tabs/charts-tab.js'
+import * as workTypesTab from './tabs/work-types-tab.js'
 import {importCSV} from './import.js'
 
 var tabContents = document.getElementsByClassName("tabcontent");
@@ -39,6 +40,7 @@ function selectTab(id)
     {
         "immersions" : immersionsTab,
         "works" : worksTab,
+        "work-types" : workTypesTab,
         "tags" : tagsTab,
         "charts" : chartTab
     };

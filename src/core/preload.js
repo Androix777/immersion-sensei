@@ -85,6 +85,36 @@ async function importWorks(data)
     return response;
 }
 
+async function getWorkTypes()
+{
+    let response = await database.getWorkTypes();
+    return response;
+}
+
+async function getWorkType(id)
+{
+    let response = await database.getWorkType(id);
+    return response;
+}
+
+async function addWorkType()
+{
+    let response = await database.addWorkType();
+    return response;
+}
+
+async function changeWorkType(id, column, value)
+{
+    let response = await database.changeWorkType(id, column, value);
+    return response;
+}
+
+async function deleteWorkType(id)
+{
+    let response = await database.deleteWorkType(id);
+    return response;
+}
+
 async function getTags()
 {
     let response = await database.getTags();
@@ -144,13 +174,18 @@ contextBridge.exposeInMainWorld
         deleteImmersion,
         changeImmersion,
         addImmersion,
+        importImmersions,
         getWorks,
         getWork,
         addWork,
         changeWork,
         deleteWork,
-        importImmersions,
         importWorks,
+        getWorkTypes,
+        getWorkType,
+        addWorkType,
+        changeWorkType,
+        deleteWorkType,
         getTags,
         getTag,
         addTag,
