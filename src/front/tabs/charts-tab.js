@@ -12,7 +12,7 @@ export async function show()
     {
         worksDataDict[element["id"]] = element["title"];
         worksColors[element["id"]] = element["color"];
-        worksTypes[element["id"]] = element["type_id"];
+        worksTypes[element["id"]] = element["type_id"] ? element["type_id"] : "-1";
     });
 
     var workTypesData = await window.api.getWorkTypes();
@@ -21,6 +21,7 @@ export async function show()
     {
         workTypesDataDict[element["id"]] = element["name"];
     });
+    workTypesDataDict["-1"] = "No type";
     
     var tagsData = await window.api.getTags();
     var tagsDataDict = {};
@@ -28,6 +29,8 @@ export async function show()
     {
         tagsDataDict[element["id"]] = element["name"];
     });
+
+    console.log(immersionsData)
 
     mainChart.create(immersionsData, worksDataDict, tagsDataDict, worksColors, worksTypes, workTypesDataDict);
 }
