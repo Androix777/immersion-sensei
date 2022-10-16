@@ -30,7 +30,5 @@ export async function show()
         tagsDataDict[element["id"]] = element["name"];
     });
 
-    console.log(immersionsData)
-
     mainChart.create(immersionsData, worksDataDict, tagsDataDict, worksColors, worksTypes, workTypesDataDict);
 }
