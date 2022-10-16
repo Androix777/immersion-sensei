@@ -96,6 +96,14 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
                 bottomCalc:"sum",
             },
             {
+                title:"Speed", 
+                field:"speed", 
+                mutator:function(value, data) 
+                {
+                    return (data.characters / (data.time/3600)).toFixed(0);
+                },
+            },
+            {
                 title:"Text", 
                 field:"text_of_immersion_id",
                 formatter: tickCrossCustomFormatter,
