@@ -102,6 +102,7 @@ export function createImmersionsTable(immersionsData, worksData, tagsData, divID
                 {
                     return (data.characters / (data.time/3600)).toFixed(0);
                 },
+                bottomCalc:"avg",
             },
             {
                 title:"Text", 
