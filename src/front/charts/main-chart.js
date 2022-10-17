@@ -7,6 +7,7 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors, wor
     var daysOfWeekChart = new dc.RowChart("#days-of-week-chart");
     var workTypesChart = new dc.RowChart('#work-types-chart');
     var tagsChart = dc.rowChart('#tags-chart');
+    var immersionsTable;
 
     var margins = {top: 10, bottom: 50, left: 75, right: 0};
 
@@ -17,6 +18,37 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors, wor
     var dayOfWeek = {0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'};
     var workTypeDimension = cf.dimension((d) => { return worksTypes[d.work_id]; });
     var tagDimension = cf.dimension((d) => { return d.tags.length && d.tags[0] ? d.tags : false}, true);
+
+    //group data
+    var groupDaysWorksData = Object.values(data.reduce((r, o) => 
+    {
+        if(r[o.date + " " + o.work_id])
+        {
+            r[o.date + " " + o.work_id].characters += o.characters;
+            r[o.date + " " + o.work_id].time += o.time;
+        } 
+        else
+        {
+            r[o.date + " " + o.work_id] = {...o};
+        };
+        return r;
+    }, 
+    {}));
+
+    var groupDaysData = Object.values(data.reduce((r, o) => 
+    {
+        if(r[o.date])
+        {
+            r[o.date].characters += o.characters;
+            r[o.date].time += o.time;
+        } 
+        else
+        {
+            r[o.date] = {...o};
+        };
+        return r;
+    }, 
+    {}));
 
     //dynamic date range
     var maxDate = Number.NEGATIVE_INFINITY;
@@ -70,6 +102,18 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors, wor
         .enter().append('option')
         .text((d) => { return d; })
         .attr('selected', (d) => { return d === 'Characters' ? '' : null });
+
+    //table group
+    var tableGroups = {
+        "No": 'no',
+        "days and works": 'daysWorks',
+        "days": 'days',
+    };
+    d3.select('#table-group').selectAll('option')
+        .data(Object.keys(tableGroups))
+        .enter().append('option')
+        .text((d) => { return d; })
+        .attr('selected', (d) => { return d === 'No' ? '' : null });
     
     //timeline chart
     function drawTimeline(dateUnit, immersionUnit)
@@ -326,6 +370,40 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors, wor
                 console.log('Unknown immersion unit')
         }
     }
+
+    //immersion table
+    function drawImmersionsTable()
+    {
+        immersionsTable = immersionsTableReadOnly.create(data, worksDataDict, tagsDataDict, "#immersions-table-charts");
+        cf.onChange(eventType => 
+        {
+            immersionsTable.setFilter("date", "in", cf.allFiltered().map(({date})=>date));
+        });
+    }
+
+    function redrawImmersionsTable(tableGroups)
+    {
+        switch(tableGroups)
+        {
+            case 'no':
+                immersionsTable.showColumn("work_id");
+                immersionsTable.showColumn("tags");
+                immersionsTable.replaceData(data);
+                break;
+            case 'daysWorks':
+                immersionsTable.showColumn("work_id");
+                immersionsTable.hideColumn("tags");
+                immersionsTable.replaceData(groupDaysWorksData);
+                break;
+            case 'days':
+                immersionsTable.hideColumn("work_id");
+                immersionsTable.hideColumn("tags");
+                immersionsTable.replaceData(groupDaysData);
+                break;
+            default:
+                console.log('Unknown table group')
+        }
+    }
     
     d3.select('#date-unit').on('change', () => 
     {
@@ -339,7 +417,13 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors, wor
         drawDaysOfWeekChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
         drawWorkTypesChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
         drawTagsChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
+        drawImmersionsTable();
         dc.renderAll();
+    });
+
+    d3.select('#table-group').on('change', () => 
+    {
+        redrawImmersionsTable(tableGroups[d3.select('#table-group').nodes()[0].value]);
     });
 
     drawTimeline(dateUnits[d3.select('#date-unit').nodes()[0].value], immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
@@ -347,12 +431,7 @@ export async function create(data, worksDataDict, tagsDataDict, worksColors, wor
     drawDaysOfWeekChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     drawWorkTypesChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
     drawTagsChart(immersionUnits[d3.select('#immersion-unit').nodes()[0].value]);
-
-    var immersionsTable = immersionsTableReadOnly.create(data, worksDataDict, tagsDataDict, "#immersions-table-charts");
-    cf.onChange(eventType => 
-    {
-        immersionsTable.setFilter("id", "in", cf.allFiltered().map(({id})=>id));
-    });
+    drawImmersionsTable();
 
     dc.renderAll();
 };

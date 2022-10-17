@@ -17,10 +17,6 @@ export function create(immersionsData, worksData, tagsData, divID)
         columns:
         [
             {
-                title:"ID", 
-                field:"id",
-            },
-            {
                 title:"Date", 
                 field:"date", 
                 formatter:"datetime",
@@ -47,6 +43,15 @@ export function create(immersionsData, worksData, tagsData, divID)
                 bottomCalc:"sum",
             },
             {
+                title:"Speed", 
+                field:"speed", 
+                mutator:function(value, data) 
+                {
+                    return (data.characters / (data.time/3600)).toFixed(0);
+                },
+                bottomCalc:"avg",
+            },
+            {
                 title:"Work", 
                 field:"work_id", 
                 formatter: (cell, formatterParams, onRendered) => 
@@ -62,7 +67,6 @@ export function create(immersionsData, worksData, tagsData, divID)
                 {
                     tagsData: tagsData
                 }
-
             }
         ],
     });
