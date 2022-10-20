@@ -32,15 +32,15 @@ export async function show()
         data = await importCSV(inputFile.files[0].path);
         
         console.log(data.columns);
-        data.columns.forEach((column) =>
+        importableColumns.forEach((iColumn) =>
         {
-            dataKey[column] = undefined;
+            dataKey[iColumn] = undefined;
 
             let keyDiv = document.createElement('div');
-            keyDiv.textContent = column;
+            keyDiv.textContent = iColumn;
 
             let keySelect = document.createElement('select');
-            keySelect.id = column;
+            keySelect.id = iColumn;
             keySelect.classList.add('keySelect');
 
             let ignoreOption = document.createElement('option');
@@ -48,12 +48,12 @@ export async function show()
             ignoreOption.textContent = 'ignore';
             keySelect.appendChild(ignoreOption);
 
-            importableColumns.forEach((iColumn) =>
+            data.columns.forEach((csvColumn) =>
             {
-                let iOption = document.createElement('option');
-                iOption.value = iColumn;
-                iOption.textContent = iColumn;
-                keySelect.appendChild(iOption);
+                let csvOption = document.createElement('option');
+                csvOption.value = csvColumn;
+                csvOption.textContent = csvColumn;
+                keySelect.appendChild(csvOption);
             })
             
             keyDiv.appendChild(keySelect);
@@ -73,6 +73,7 @@ export async function show()
         {
             dataKey[keySelect.id] = keySelect.value;
         })
+        dataKey = Object.fromEntries(Object.entries(dataKey).map(([k, v]) => [v, k]));
         importButton.disabled = true;
         dataDict = preprocessImportData(data, dataKey);
         previewDiv.innerHTML = JSON.stringify(dataDict['immersions'].slice(0, 5)).replaceAll('},{', '<br>').replaceAll('[{', '').replaceAll('}]', '');
