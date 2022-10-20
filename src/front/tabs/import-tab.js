@@ -28,39 +28,27 @@ export async function show()
     parseButton.disabled = true;
     parseButton.onclick = async () =>
     {
-        loadButton.disabled = true;
-        data = await importCSV(inputFile.files[0].path);
-        
-        console.log(data.columns);
-        importableColumns.forEach((iColumn) =>
+        try
         {
-            dataKey[iColumn] = undefined;
+            data = await loadCSV(inputFile.files[0].path);
+        }
+        catch(exception)
+        {
+            console.error(exception);
+            Notiflix.Notify.failure('Failed to open file', currentNotifyOptions);
+            return;
+        }
+        
+        if(data.columns.length < 2)
+        {
+            Notiflix.Notify.failure('Not enough columns in CSV', currentNotifyOptions);
+            return;
+        }
 
-            let keyDiv = document.createElement('div');
-            keyDiv.textContent = iColumn;
+        createColumnSelects(importableColumns, data.columns)
 
-            let keySelect = document.createElement('select');
-            keySelect.id = iColumn;
-            keySelect.classList.add('keySelect');
-
-            let ignoreOption = document.createElement('option');
-            ignoreOption.value = 'ignore';
-            ignoreOption.textContent = 'ignore';
-            keySelect.appendChild(ignoreOption);
-
-            data.columns.forEach((csvColumn) =>
-            {
-                let csvOption = document.createElement('option');
-                csvOption.value = csvColumn;
-                csvOption.textContent = csvColumn;
-                keySelect.appendChild(csvOption);
-            })
-            
-            keyDiv.appendChild(keySelect);
-            importTab.appendChild(keyDiv);
-            toCleanUp.push(keyDiv);
-        })
         loadButton.disabled = false;
+        parseButton.disabled = true;
     }
     importTab.appendChild(parseButton);
 
@@ -74,10 +62,22 @@ export async function show()
             dataKey[keySelect.id] = keySelect.value;
         })
         dataKey = Object.fromEntries(Object.entries(dataKey).map(([k, v]) => [v, k]));
-        importButton.disabled = true;
-        dataDict = preprocessImportData(data, dataKey);
+
+        try
+        {
+            dataDict = preprocessImportData(data, dataKey);
+        }
+        catch(exception)
+        {
+            console.error(exception);
+            Notiflix.Notify.failure('Failed to load data', currentNotifyOptions);
+            return;
+        }
+
         previewDiv.innerHTML = JSON.stringify(dataDict['immersions'].slice(0, 5)).replaceAll('},{', '<br>').replaceAll('[{', '').replaceAll('}]', '');
+
         importButton.disabled = false;
+        loadButton.disabled = true;
     }
     importTab.appendChild(loadButton);
 
@@ -87,12 +87,44 @@ export async function show()
     importButton.onclick = async () =>
     {
         await importData(dataDict);
+        Notiflix.Notify.success('Import complete', currentNotifyOptions);
+
         importButton.disabled = true;
         loadButton.disabled = true;
         parseButton.disabled = true;
-        alert('Import complete');
+        
     }
     importTab.appendChild(importButton);
+
+    function createColumnSelects(importableColumns, csvColumns)
+    {
+        importableColumns.forEach((iColumn) =>
+        {
+            let keyDiv = document.createElement('div');
+            keyDiv.textContent = iColumn;
+
+            let keySelect = document.createElement('select');
+            keySelect.id = iColumn;
+            keySelect.classList.add('keySelect');
+
+            let ignoreOption = document.createElement('option');
+            ignoreOption.value = 'ignore';
+            ignoreOption.textContent = 'ignore';
+            keySelect.appendChild(ignoreOption);
+
+            csvColumns.forEach((csvColumn) =>
+            {
+                let csvOption = document.createElement('option');
+                csvOption.value = csvColumn;
+                csvOption.textContent = csvColumn;
+                keySelect.appendChild(csvOption);
+            })
+            
+            keyDiv.appendChild(keySelect);
+            importTab.appendChild(keyDiv);
+            toCleanUp.push(keyDiv);
+        })
+    }
    
     toCleanUp.push(inputFile);
     toCleanUp.push(previewDiv);
@@ -120,7 +152,7 @@ function preprocessImportData(data, dataKey)
                 delete Object.assign(immersion, {[dataKey[key]]: immersion[key] })[key];
             }
         });
-        delete immersion['ignore'];
+        delete immersion[undefined];
     })
 
     var works = (Array.from(new Set(data.map(immersion => immersion['work'])))).map(x => ({'title': x, 'color': autoColorRGB(x)}));
@@ -206,7 +238,7 @@ function autoColorRGB(name)
     return '#' + '00000'.substring(0, 6 - color.length) + color;
 }
 
-async function importCSV(path)
+async function loadCSV(path)
 {
     return await d3.csv(path);
 }
