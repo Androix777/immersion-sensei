@@ -114,7 +114,10 @@ function preprocessImportData(data, dataKey)
     {
         Object.keys(immersion).forEach((key) =>
         {
-            delete Object.assign(immersion, {[dataKey[key]]: immersion[key] })[key];
+            if(dataKey[key] != key)
+            {
+                delete Object.assign(immersion, {[dataKey[key]]: immersion[key] })[key];
+            }
         });
         delete immersion['ignore'];
     })
