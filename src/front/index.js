@@ -99,10 +99,10 @@ function loadInnerHTML(HTMLPath, targetElement)
     request.send();
     request.addEventListener("readystatechange", function () 
     {
-    if (this.readyState === this.DONE) 
-    {
-        targetElement.innerHTML = this.responseText;
-    }
+        if (this.readyState === this.DONE) 
+        {
+            targetElement.innerHTML = this.responseText;
+        }
     });
 }
 
