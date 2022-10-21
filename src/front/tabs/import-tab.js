@@ -3,34 +3,31 @@ import * as notifyOptions from '../notiflix/notify-options.js'
 var currentNotifyOptions = notifyOptions.defaultOptions;
 var toCleanUp = []
 
+var importTab = document.getElementById('import');
+var importFile = document.getElementById('import-file');
+var previewDiv = document.getElementById('preview-div');
+var columnMatchDiv = document.getElementById('column-match-div');
+var parseButton = document.getElementById('parse-button');
+var loadButton = document.getElementById('load-button');
+var importButton = document.getElementById('import-button');
+
 export async function show()
 {
     var dataDict = undefined;
     var data = undefined;
     var importableColumns = ['date', 'characters', 'time', 'work', 'tags'];
-    var dataKey = {};
+    var dataKey = {};    
 
-    var importTab = document.getElementById('import');
-
-    var inputFile = document.createElement('input');
-    inputFile.type = 'file';
-    inputFile.onchange = () =>
+    importFile.onchange = () =>
     {
         parseButton.disabled = false;
     }
-    importTab.appendChild(inputFile);
 
-    var previewDiv = document.createElement('div');
-    importTab.appendChild(previewDiv);
-
-    var parseButton = document.createElement('button');
-    parseButton.textContent = 'Parse';
-    parseButton.disabled = true;
     parseButton.onclick = async () =>
     {
         try
         {
-            data = await loadCSV(inputFile.files[0].path);
+            data = await loadCSV(importFile.files[0].path);
         }
         catch(exception)
         {
@@ -45,16 +42,12 @@ export async function show()
             return;
         }
 
-        createColumnSelects(importableColumns, data.columns)
+        createColumnSelects(columnMatchDiv, importableColumns, data.columns)
 
         loadButton.disabled = false;
         parseButton.disabled = true;
     }
-    importTab.appendChild(parseButton);
 
-    var loadButton = document.createElement('button');
-    loadButton.textContent = 'Load';
-    loadButton.disabled = true;
     loadButton.onclick = async () =>
     {
         Array.from(document.getElementsByClassName('keySelect')).forEach((keySelect) =>
@@ -74,16 +67,15 @@ export async function show()
             return;
         }
 
-        previewDiv.innerHTML = JSON.stringify(dataDict['immersions'].slice(0, 5)).replaceAll('},{', '<br>').replaceAll('[{', '').replaceAll('}]', '');
+        var previewContent = document.createElement('div');
+        previewContent.innerHTML = JSON.stringify(dataDict['immersions'].slice(0, 5)).replaceAll('},{', '<br>').replaceAll('[{', '').replaceAll('}]', '');
+        previewDiv.appendChild(previewContent);
+        toCleanUp.push(previewContent);
 
         importButton.disabled = false;
         loadButton.disabled = true;
     }
-    importTab.appendChild(loadButton);
 
-    var importButton = document.createElement('button');
-    importButton.textContent = 'Import';
-    importButton.disabled = true;
     importButton.onclick = async () =>
     {
         await importData(dataDict);
@@ -94,9 +86,8 @@ export async function show()
         parseButton.disabled = true;
         
     }
-    importTab.appendChild(importButton);
 
-    function createColumnSelects(importableColumns, csvColumns)
+    function createColumnSelects(columnMatchDiv, importableColumns, csvColumns)
     {
         importableColumns.forEach((iColumn) =>
         {
@@ -121,20 +112,18 @@ export async function show()
             })
             
             keyDiv.appendChild(keySelect);
-            importTab.appendChild(keyDiv);
+            columnMatchDiv.appendChild(keyDiv);
             toCleanUp.push(keyDiv);
         })
     }
-   
-    toCleanUp.push(inputFile);
-    toCleanUp.push(previewDiv);
-    toCleanUp.push(parseButton);
-    toCleanUp.push(loadButton);
-    toCleanUp.push(importButton);
 }
 
 export function hide()
 {
+    importFile.value = null;
+    parseButton.disabled = true;
+    loadButton.disabled = true;
+    importButton.disabled = true;
     toCleanUp.forEach((element) =>
     {
         element.remove();
