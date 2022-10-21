@@ -91,3 +91,19 @@ function showText(text)
     response.textContent = responseText;
     responses?.appendChild(response);
 }
+
+function loadInnerHTML(HTMLPath, targetElement)
+{
+    var request = new XMLHttpRequest();
+    request.open('GET', HTMLPath);
+    request.send();
+    request.addEventListener("readystatechange", function () 
+    {
+    if (this.readyState === this.DONE) 
+    {
+        targetElement.innerHTML = this.responseText;
+    }
+    });
+}
+
+loadInnerHTML('./import.html', document.getElementById('import'));

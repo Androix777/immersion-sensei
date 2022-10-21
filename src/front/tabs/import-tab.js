@@ -3,20 +3,33 @@ import * as notifyOptions from '../notiflix/notify-options.js'
 var currentNotifyOptions = notifyOptions.defaultOptions;
 var toCleanUp = []
 
-var importTab = document.getElementById('import');
-var importFile = document.getElementById('import-file');
-var previewDiv = document.getElementById('preview-div');
-var columnMatchDiv = document.getElementById('column-match-div');
-var parseButton = document.getElementById('parse-button');
-var loadButton = document.getElementById('load-button');
-var importButton = document.getElementById('import-button');
+var importTab = undefined;
+var importFile = undefined;
+var previewDiv = undefined;
+var columnMatchDiv = undefined;
+var parseButton = undefined;
+var loadButton = undefined;
+var importButton = undefined;
+
+function getElements()
+{
+    importTab = document.getElementById('import');
+    importFile = document.getElementById('import-file');
+    previewDiv = document.getElementById('preview-div');
+    columnMatchDiv = document.getElementById('column-match-div');
+    parseButton = document.getElementById('parse-button');
+    loadButton = document.getElementById('load-button');
+    importButton = document.getElementById('import-button');
+}
 
 export async function show()
 {
     var dataDict = undefined;
     var data = undefined;
     var importableColumns = ['date', 'characters', 'time', 'work', 'tags'];
-    var dataKey = {};    
+    var dataKey = {};
+
+    getElements();
 
     importFile.onchange = () =>
     {
@@ -120,6 +133,8 @@ export async function show()
 
 export function hide()
 {
+    getElements();
+    
     importFile.value = null;
     parseButton.disabled = true;
     loadButton.disabled = true;
