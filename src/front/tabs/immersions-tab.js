@@ -112,33 +112,19 @@ export async function show()
 
     async function onImmersionTextClick(e, cell)
     {
-        var modalBackground = document.getElementById('modal-background');
-        modalBackground.style.display = 'block';
-        
-        var textField = document.createElement('textarea');
-        textField.style.height = '95%';
-        textField.style.width = '100%';
-        var acceptButton = document.createElement('button');
-        acceptButton.textContent = 'Accept';
-        var deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Delete';
-        var cancelButton = document.createElement('button');
-        cancelButton.textContent = 'Cancel';
-
-        var modalContent = document.getElementById('modal-content');
-        modalContent.style.height = '75%';
-
-        modalContent.appendChild(textField);
-        modalContent.appendChild(acceptButton);
-        modalContent.appendChild(deleteButton);
-        modalContent.appendChild(cancelButton);
+        var closeWindow = await showModalWindow('./immersion-text.html');
+        var immersionTextarea = document.getElementById('immersion-textarea');
+        console.log(immersionTextarea);
+        var acceptButton = document.getElementById('accept-button');
+        var deleteButton = document.getElementById('delete-button');
+        var cancelButton = document.getElementById('cancel-button');
 
         if(!cell.getValue())
         {
-            textField.textContent = 'No immersion text for immersion ' + cell.getData().id;
+            immersionTextarea.textContent = 'No immersion text for immersion ' + cell.getData().id;
             acceptButton.onclick = async () =>
             {
-                var newID = await window.api.addImmersionText(textField.value);
+                var newID = await window.api.addImmersionText(immersionTextarea.value);
                 if(newID)
                 {
                     var response = await window.api.changeImmersion(cell.getData().id, 'text_of_immersion_id', newID[0]);
@@ -148,7 +134,7 @@ export async function show()
                         cell.setValue(newID);
                     }
                 }
-                closeTextViewer();
+                closeWindow();
             }
             deleteButton.disabled = true;
         }
@@ -156,15 +142,15 @@ export async function show()
         {
             acceptButton.onclick = async () =>
             {
-                var response = await window.api.changeImmersionText(cell.getData().text_of_immersion_id, textField.value);
+                var response = await window.api.changeImmersionText(cell.getData().text_of_immersion_id, immersionTextarea.value);
                 if(response)
                 {
                     Notiflix.Notify.success('Immersion text changed', currentNotifyOptions);
                 }
-                closeTextViewer();
+                closeWindow();
             }
             var immersionText = await window.api.getImmersionText(cell.getData().text_of_immersion_id);
-            textField.textContent = immersionText[0]['text'];
+            immersionTextarea.textContent = immersionText[0]['text'];
             deleteButton.onclick = async() =>
             {
                 var response = await window.api.deleteImmersionText(cell.getValue());
@@ -173,34 +159,82 @@ export async function show()
                     Notiflix.Notify.success('Immersion text deleted', currentNotifyOptions);
                     cell.setValue(null);
                 }
-                closeTextViewer();
+                closeWindow();
             }
         }
 
         window.onclick = (event) =>
         {
-            if (event.target == modalBackground)
+            if (event.target == document.getElementById('modal-background'))
             {
-                closeTextViewer();
+                closeWindow();
             }
         };
         cancelButton.onclick = () =>
         {
-            closeTextViewer();
+            closeWindow();
         };
-        
-        function closeTextViewer()
-        {
-            modalBackground.style.display = 'none';
-            textField.remove();
-            acceptButton.remove();
-            deleteButton.remove();
-            cancelButton.remove();
-        }
     }
 }
 
 export function hide()
 {
     immersionsTable.destroy();
+}
+
+async function showModalWindow(HTMLPath)
+{
+    var modalBackground = document.getElementById('modal-background');
+    modalBackground.style.display = 'block';
+
+    var modalContent = document.getElementById('modal-content');
+    modalContent.style.height = '75%';
+
+    await loadInnerHTML(HTMLPath, modalContent);
+
+    return function closeModalWindow()
+    {
+        modalBackground.style.display = 'none';
+        modalContent.replaceChildren();
+    }
+}
+
+async function loadInnerHTML(HTMLPath, targetElement)
+{
+    targetElement.innerHTML = await loadFile(HTMLPath);
+}
+
+function loadFile(HTMLPath)
+{
+    return new Promise(function (resolve, reject) 
+    {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', HTMLPath);
+        xhr.onload = function () 
+        {
+            if (this.status >= 200 && this.status < 300) 
+            {
+                resolve(xhr.response);
+            } 
+            else 
+            {
+                reject(
+                    {
+                    status: this.status,
+                    statusText: xhr.statusText
+                    }
+                );
+            }
+        };
+        xhr.onerror = function () 
+        {
+            reject(
+                {
+                    status: this.status,
+                    statusText: xhr.statusText
+                }
+            );
+        };
+        xhr.send();
+    });
 }
