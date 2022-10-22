@@ -4,6 +4,7 @@ import * as tagsTab from './tabs/tags-tab.js'
 import * as chartTab from './tabs/charts-tab.js'
 import * as workTypesTab from './tabs/work-types-tab.js'
 import * as importTab from './tabs/import-tab.js'
+import * as settingsTab from './tabs/settings-tab.js'
 
 var tabContents = document.getElementsByClassName("tabcontent");
 
@@ -43,7 +44,8 @@ function selectTab(id)
         "work-types" : workTypesTab,
         "tags" : tagsTab,
         "charts" : chartTab,
-        "import" : importTab
+        "import" : importTab,
+        "settings" : settingsTab
     };
 
     for (let i = 0; i < tabContents.length; i++)

@@ -1,5 +1,6 @@
 const { contextBridge } = require("electron");
-const { database } = require("../back/database")
+const { database } = require("../back/database");
+const { settings } = require("../back/settings");
 
 
 function tryConnect()
@@ -187,6 +188,16 @@ async function deleteImmersionText(id)
     return response;
 }
 
+async function readSettings()
+{
+    return await settings.readSettings();
+}
+
+async function writeSettings(settingsContent)
+{
+    await settings.writeSettings(settingsContent);
+}
+
 contextBridge.exposeInMainWorld
 (
     "api", 
@@ -221,6 +232,8 @@ contextBridge.exposeInMainWorld
         getImmersionText,
         addImmersionText,
         changeImmersionText,
-        deleteImmersionText
+        deleteImmersionText,
+        readSettings,
+        writeSettings
     }
 )
