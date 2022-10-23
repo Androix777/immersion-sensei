@@ -71,3 +71,8 @@ body
     border: 1px solid #888;
     width: 80%;
 }
+
+.search-result 
+{
+    background-color: #e5e76a;
+}
