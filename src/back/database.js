@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const luxon = require('luxon');
-const { start } = require('repl');
 
 
 class database
@@ -363,17 +362,16 @@ class database
     }
 
     static async searchImmersionTexts(searchText)
-{
-    var startTime = performance.now();
-    let response = await database.knex
-        .from("texts_of_immersions")
-        .whereLike('text', '%'+ searchText +'%')
-        .select('id');
-    var endTime = performance.now()
-    console.log(`${endTime - startTime} milliseconds search`);
-    console.log(response);
-    return response;
-}
+    {
+        var startTime = performance.now();
+        let response = await database.knex
+            .from("texts_of_immersions")
+            .whereLike('text', '%'+ searchText +'%')
+            .select('id');
+        var endTime = performance.now()
+        console.log(`${endTime - startTime} milliseconds search`);
+        return response;
+    }
 
     //Test data
     static async addData()
