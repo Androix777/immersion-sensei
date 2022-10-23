@@ -1,3 +1,7 @@
+const fs = require('fs');
+const path = require('path');
+const { start } = require('repl');
+
 class database
 {
     static fs = require('fs');
@@ -358,6 +362,35 @@ class database
             .where({ id: id })
             .del()
         return response;
+    }
+
+    //Test data
+    static async addData()
+    {
+        var textsFolder = '';
+        var textFiles = await fs.promises.readdir(textsFolder);
+        
+        var currentDate = database.luxon.DateTime.now();
+        var index = 0;
+
+        var subArray = textFiles.slice(0,90000);
+        for(var textFile in subArray)
+        {
+            var text = await fs.promises.readFile(path.join(textsFolder, subArray[textFile]), "utf8");
+            var textID = await database.addImmersionText(text);
+            await database.knex
+            .from("immersions")
+            .insert(
+            {
+                text_of_immersion_id: textID,
+                time: 3600,
+                characters: text.length,
+                date: currentDate.plus({ days: (index/25>>0) }).toFormat('yyyy-LL-dd')
+            })
+
+            index++;
+            console.log(index)
+        };
     }
 }
 
