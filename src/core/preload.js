@@ -188,6 +188,12 @@ async function deleteImmersionText(id)
     return response;
 }
 
+async function searchImmersionTexts(searchText)
+{
+    let response = await database.searchImmersionTexts(searchText);
+    return response;
+}
+
 async function readSettings()
 {
     return await settings.readSettings();
@@ -233,6 +239,7 @@ contextBridge.exposeInMainWorld
         addImmersionText,
         changeImmersionText,
         deleteImmersionText,
+        searchImmersionTexts,
         readSettings,
         writeSettings
     }

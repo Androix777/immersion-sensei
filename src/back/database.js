@@ -362,6 +362,19 @@ class database
         return response;
     }
 
+    static async searchImmersionTexts(searchText)
+{
+    var startTime = performance.now();
+    let response = await database.knex
+        .from("texts_of_immersions")
+        .whereLike('text', '%'+ searchText +'%')
+        .select('id');
+    var endTime = performance.now()
+    console.log(`${endTime - startTime} milliseconds search`);
+    console.log(response);
+    return response;
+}
+
     //Test data
     static async addData()
     {
@@ -387,7 +400,7 @@ class database
             })
 
             index++;
-            console.log(index)
+            console.log(index);
         };
     }
 }
