@@ -1,13 +1,11 @@
 const fs = require('fs');
 const path = require('path');
+const luxon = require('luxon');
 const { start } = require('repl');
+
 
 class database
 {
-    static fs = require('fs');
-    static path = require('path');
-    static luxon = require('luxon');
-
     static rootPath = process.env.INIT_CWD
     static defaultDBPath = "./user_data/immersion.sqlite"
     static defaultTemplatePath = "./src/back/db/immersion.sqlite"
@@ -16,8 +14,8 @@ class database
 
     static async tryConnect()
     {
-        var dbPath = database.path.join(database.rootPath, database.defaultDBPath);
-        if (database.fs.existsSync(dbPath)) 
+        var dbPath = path.join(database.rootPath, database.defaultDBPath);
+        if (fs.existsSync(dbPath)) 
         {
             database.connect()
         }
@@ -29,7 +27,7 @@ class database
 
     static async createAndConnect()
     {
-        database.fs.copyFile(database.path.join(database.rootPath, database.defaultTemplatePath), database.path.join(database.rootPath, database.defaultDBPath), 
+        fs.copyFile(path.join(database.rootPath, database.defaultTemplatePath), database.path.join(database.rootPath, database.defaultDBPath), 
             (err) => { if (err) throw err; });
         
         database.connect();
@@ -104,7 +102,7 @@ class database
             .from("immersions")
             .insert(
             {
-                date: database.luxon.DateTime.now().toFormat('yyyy-LL-dd')
+                date: luxon.DateTime.now().toFormat('yyyy-LL-dd')
             })
             .returning('id')
         return response;
@@ -370,7 +368,7 @@ class database
         var textsFolder = '';
         var textFiles = await fs.promises.readdir(textsFolder);
         
-        var currentDate = database.luxon.DateTime.now();
+        var currentDate = luxon.DateTime.now();
         var index = 0;
 
         var subArray = textFiles.slice(0,90000);
