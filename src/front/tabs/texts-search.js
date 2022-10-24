@@ -47,11 +47,11 @@ async function search()
 
         if(textLength - index > range)
         {
-            endIndex = index + range;
+            endIndex = index + range + searchText.length;
         }
         else
         {
-            endIndex = textLength - 1;
+            endIndex = textLength;
         }
 
         var textPart = text.substring(startIndex, endIndex)
@@ -64,9 +64,5 @@ async function search()
         });
 
         searchResponse.innerHTML += textPart.substring(0, index - startIndex) + '<span class = "search-result">' + textPart.substring(index - startIndex, index + searchText.length - startIndex) + '</span>' + textPart.substring(index + searchText.length - startIndex) + '<br>';
-        console.log(index);
-        console.log(startIndex);
-        console.log(endIndex);
-        console.log(searchResultsTexts);
     };
 }
