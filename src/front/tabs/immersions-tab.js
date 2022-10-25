@@ -1,5 +1,6 @@
 import {createImmersionsTable} from '../tables/immersions-table.js'
 import * as notifyOptions from '../notiflix/notify-options.js'
+import { ImmersionTextWindow } from '../modal-windows.js';
 
 var currentNotifyOptions = notifyOptions.defaultOptions;
 var immersionsTable = undefined;
@@ -112,19 +113,14 @@ export async function show()
 
     async function onImmersionTextClick(e, cell)
     {
-        var closeWindow = await showModalWindow('./immersion-text.html');
-        var immersionTextarea = document.getElementById('immersion-textarea');
-        console.log(immersionTextarea);
-        var acceptButton = document.getElementById('accept-button');
-        var deleteButton = document.getElementById('delete-button');
-        var cancelButton = document.getElementById('cancel-button');
+        var immersionTextWindow = new ImmersionTextWindow()
 
         if(!cell.getValue())
         {
-            immersionTextarea.textContent = 'No immersion text for immersion ' + cell.getData().id;
-            acceptButton.onclick = async () =>
+            (await immersionTextWindow.init('No immersion text for immersion ' + cell.getData().id)).show();
+            immersionTextWindow.on('acceptButtonClick', async () =>
             {
-                var newID = await window.api.addImmersionText(immersionTextarea.value);
+                var newID = await window.api.addImmersionText(immersionTextWindow.immersionText);
                 if(newID)
                 {
                     var response = await window.api.changeImmersion(cell.getData().id, 'text_of_immersion_id', newID[0]);
@@ -134,24 +130,24 @@ export async function show()
                         cell.setValue(newID);
                     }
                 }
-                closeWindow();
-            }
-            deleteButton.disabled = true;
+                immersionTextWindow.destroy();
+            });
+            immersionTextWindow.deleteButton.disabled = true;
         }
         else
         {
-            acceptButton.onclick = async () =>
+            (await immersionTextWindow.init((await window.api.getImmersionText(cell.getData().text_of_immersion_id))[0]['text'])).show();
+            immersionTextWindow.on('acceptButtonClick', async () =>
             {
-                var response = await window.api.changeImmersionText(cell.getData().text_of_immersion_id, immersionTextarea.value);
+                var response = await window.api.changeImmersionText(cell.getData().text_of_immersion_id, immersionTextWindow.immersionText);
                 if(response)
                 {
                     Notiflix.Notify.success('Immersion text changed', currentNotifyOptions);
                 }
-                closeWindow();
-            }
-            var immersionText = await window.api.getImmersionText(cell.getData().text_of_immersion_id);
-            immersionTextarea.textContent = immersionText[0]['text'];
-            deleteButton.onclick = async() =>
+                immersionTextWindow.destroy();
+            });
+
+            immersionTextWindow.on('deleteButtonClick', async() =>
             {
                 var response = await window.api.deleteImmersionText(cell.getValue());
                 if(response)
@@ -159,82 +155,18 @@ export async function show()
                     Notiflix.Notify.success('Immersion text deleted', currentNotifyOptions);
                     cell.setValue(null);
                 }
-                closeWindow();
-            }
+                immersionTextWindow.destroy();
+            });
         }
 
-        window.onclick = (event) =>
+        immersionTextWindow.on('cancelButtonClick', () =>
         {
-            if (event.target == document.getElementById('modal-background'))
-            {
-                closeWindow();
-            }
-        };
-        cancelButton.onclick = () =>
-        {
-            closeWindow();
-        };
+            immersionTextWindow.destroy();
+        });
     }
 }
 
 export function hide()
 {
     immersionsTable.destroy();
-}
-
-async function showModalWindow(HTMLPath)
-{
-    var modalBackground = document.getElementById('modal-background');
-    modalBackground.style.display = 'block';
-
-    var modalContent = document.getElementById('modal-content');
-    modalContent.style.height = '75%';
-
-    await loadInnerHTML(HTMLPath, modalContent);
-
-    return function closeModalWindow()
-    {
-        modalBackground.style.display = 'none';
-        modalContent.replaceChildren();
-    }
-}
-
-async function loadInnerHTML(HTMLPath, targetElement)
-{
-    targetElement.innerHTML = await loadFile(HTMLPath);
-}
-
-function loadFile(HTMLPath)
-{
-    return new Promise(function (resolve, reject) 
-    {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', HTMLPath);
-        xhr.onload = function () 
-        {
-            if (this.status >= 200 && this.status < 300) 
-            {
-                resolve(xhr.response);
-            } 
-            else 
-            {
-                reject(
-                    {
-                    status: this.status,
-                    statusText: xhr.statusText
-                    }
-                );
-            }
-        };
-        xhr.onerror = function () 
-        {
-            reject(
-                {
-                    status: this.status,
-                    statusText: xhr.statusText
-                }
-            );
-        };
-        xhr.send();
-    });
 }
