@@ -1,28 +1,48 @@
 import * as notifyOptions from '../notiflix/notify-options.js'
 
-var currentNotifyOptions = notifyOptions.defaultOptions;
 var toCleanUp = []
 
 var settingsTextarea = undefined;
 var readButton = undefined;
 var writeButton = undefined;
-var notifyOptionsSelect = undefined;
+var notificationPositionSelect = undefined;
+var notificationTimeoutInput = undefined;
+var settingsCancelButton = undefined;
+var settingsDefaultButton = undefined;
+var settingsSaveButton = undefined;
 
 function getElements()
 {
     settingsTextarea = document.getElementById('settings-textarea');
     readButton = document.getElementById('settings-read-button');
     writeButton = document.getElementById('settings-write-button');
-    notifyOptionsSelect = document.getElementById('notification-position')
+    notificationTimeoutInput = document.getElementById('notification-timeout');
+    notificationPositionSelect = document.getElementById('notification-position');
+    settingsCancelButton = document.getElementById('settings-cancel-button');
+    settingsDefaultButton = document.getElementById('settings-default-button');
+    settingsSaveButton = document.getElementById('settings-save-button');
 }
 
 export async function show()
 {
     getElements();
 
-    var settingsContent = await window.api.readSettings();
-    settingsTextarea.value = settingsContent;
+    var settingsJSON = await loadSettings();
 
+    if(Object.keys(settingsJSON).length)
+    {
+        settingsTextarea.value = JSON.stringify(settingsJSON);
+    }
+    else
+    {
+        settingsTextarea.value = JSON.stringify({'notifyOptions' : notifyOptions.defaultOptions});
+        settingsJSON = JSON.parse(settingsTextarea.value);
+        await window.api.writeSettings(JSON.stringify(settingsJSON));
+        Notiflix.Notify.success("Loaded default settings", await(notifyOptions.loadNotifyOptions()));
+    }
+
+    setSettingsSelectors(settingsJSON);
+    
     readButton.onclick = async () =>
     {
         var settingsContent = await window.api.readSettings();
@@ -34,10 +54,38 @@ export async function show()
         window.api.writeSettings(settingsTextarea.value);
     }
 
-    notifyOptionsSelect.onchange = () =>
+    settingsCancelButton.onclick = () =>
     {
-        notifyOptions.defaultOptions['position'] = notifyOptionsSelect.value;
-        Notiflix.Notify.success('Immersion text changed', currentNotifyOptions);
+        setSettingsSelectors(settingsJSON);
+    }
+
+    settingsSaveButton.onclick = async () =>
+    {
+        settingsJSON['notifyOptions']['timeout'] = +notificationTimeoutInput.value;
+        settingsJSON['notifyOptions']['position'] = notificationPositionSelect.value;
+        await window.api.writeSettings(JSON.stringify(settingsJSON));
+        Notiflix.Notify.success('Settings saved', await(notifyOptions.loadNotifyOptions()));
+    }
+
+}
+
+function setSettingsSelectors(settingsJSON)
+{
+    notificationTimeoutInput.value = settingsJSON['notifyOptions']['timeout'];
+    notificationPositionSelect.value = settingsJSON['notifyOptions']['position'];
+}
+
+async function loadSettings()
+{
+    var settingsText = await window.api.readSettings();
+    try
+    {
+        return JSON.parse(settingsText);
+    }
+    catch (e)
+    {
+        console.error('Failed to parse settings: ' + e);
+        return {};
     }
 }
 

@@ -19,6 +19,7 @@
         <div class="main">
             <div id="common">
                 <button onclick = "window.location.reload()">Reload</button>
+                <button id = "notify">Notify</button>
                 <h1></h1>
                 <form>
                     <input type="text" autofocus />
@@ -64,15 +65,23 @@
                 <textarea id = "settings-textarea" style = "width:400px; height:200px;"></textarea>
                 <button id = "settings-read-button">Read</button>
                 <button id = "settings-write-button">Write</button>
-                <select id = "notification-position">
-                    <option value = "right-top">right-top</option>
-                    <option value = "right-bottom">right-bottom</option>
-                    <option value = "left-top">left-top</option>
-                    <option value = "left-bottom">left-bottom</option>
-                    <option value = "center-top">center-top</option>
-                    <option value = "center-bottom">center-bottom</option>
-                    <option value = "center-center">center-center</option>
-                </select>
+                <div>
+                    <input id = "notification-timeout" type = "number", min = "100">
+                    <select id = "notification-position">
+                        <option value = "right-top">right-top</option>
+                        <option value = "right-bottom">right-bottom</option>
+                        <option value = "left-top">left-top</option>
+                        <option value = "left-bottom">left-bottom</option>
+                        <option value = "center-top">center-top</option>
+                        <option value = "center-bottom">center-bottom</option>
+                        <option value = "center-center">center-center</option>
+                    </select>
+                </div>
+                <div>
+                    <button id = "settings-cancel-button">Cancel</button>
+                    <button id = "settings-default-button" disabled = true>Default</button>
+                    <button id = "settings-save-button">Save</button>
+                </div>
             </div>
             <div id = "texts-search" class = "tabcontent">
                 <input type="text" id = "texts-search-input">
