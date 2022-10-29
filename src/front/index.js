@@ -4,6 +4,7 @@ import * as tagsTab from './tabs/tags-tab.js'
 import * as chartTab from './tabs/charts-tab.js'
 import * as workTypesTab from './tabs/work-types-tab.js'
 import * as importTab from './tabs/import-tab.js'
+import * as exportTab from './tabs/export-tab.js'
 import * as settingsTab from './tabs/settings-tab.js'
 import * as textsSearchTab from './tabs/texts-search.js'
 
@@ -46,6 +47,7 @@ function selectTab(id)
         "tags" : tagsTab,
         "charts" : chartTab,
         "import" : importTab,
+        "export" : exportTab,
         "settings" : settingsTab,
         "texts-search" : textsSearchTab,
     };
