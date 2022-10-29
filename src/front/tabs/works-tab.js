@@ -1,7 +1,6 @@
 import {createWorksTable} from '../tables/works-table.js'
 import * as notifyOptions from '../notiflix/notify-options.js'
 
-var currentNotifyOptions = notifyOptions.defaultOptions;
 var worksTable = undefined;
 
 export async function show()
@@ -37,12 +36,12 @@ export async function show()
 
         if(response == 0) 
         {
-            Notiflix.Notify.failure('Not changed', currentNotifyOptions); 
+            Notiflix.Notify.failure('Not changed', notifyOptions.currentOptions); 
             cell.restoreOldValue();
         }
         else 
         {
-            Notiflix.Notify.success('Cell changed', currentNotifyOptions);
+            Notiflix.Notify.success('Cell changed', notifyOptions.currentOptions);
         }
     });
 
@@ -54,17 +53,17 @@ export async function show()
             response = await window.api.getWork(response[0]);
             if(response == 0) 
             {
-                Notiflix.Notify.failure('Not added', currentNotifyOptions); 
+                Notiflix.Notify.failure('Not added', notifyOptions.currentOptions); 
             }
             else 
             {
-                Notiflix.Notify.success('Row added', currentNotifyOptions);
+                Notiflix.Notify.success('Row added', notifyOptions.currentOptions);
                 worksTable.addData([response[0]], false);
             }
         }
         else
         {
-            Notiflix.Notify.failure('Not added', currentNotifyOptions); 
+            Notiflix.Notify.failure('Not added', notifyOptions.currentOptions); 
         }
     }
 
@@ -80,11 +79,11 @@ export async function show()
                 var response = await window.api.deleteWork(row.getData().id)
                 if(response == 0) 
                 {
-                    Notiflix.Notify.failure('Not deleted', currentNotifyOptions); 
+                    Notiflix.Notify.failure('Not deleted', notifyOptions.currentOptions); 
                 }
                 else 
                 {
-                    Notiflix.Notify.success('Row deleted', currentNotifyOptions);
+                    Notiflix.Notify.success('Row deleted', notifyOptions.currentOptions);
                     row.delete();
                 }
             },
@@ -98,14 +97,14 @@ export async function show()
         var response = await window.api.changeWork(row.getData().id, 'color', newColor);
         if(response != 0)
         {
-            Notiflix.Notify.success('Set auto color', currentNotifyOptions);
+            Notiflix.Notify.success('Set auto color', notifyOptions.currentOptions);
             var rowData = row.getData();
             rowData.color = newColor;
             worksTable.updateRow(row, rowData);
         }
         else
         {
-            Notiflix.Notify.failure('Failed to set auto color', currentNotifyOptions); 
+            Notiflix.Notify.failure('Failed to set auto color', notifyOptions.currentOptions); 
         }
     }
 

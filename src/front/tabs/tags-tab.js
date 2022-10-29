@@ -1,7 +1,6 @@
 import {createTagsTable} from '../tables/tags-table.js'
 import * as notifyOptions from '../notiflix/notify-options.js'
 
-var currentNotifyOptions = notifyOptions.defaultOptions;
 var tagsTable = undefined;
 
 export async function show()
@@ -19,12 +18,12 @@ export async function show()
 
         if(response == 0) 
         {
-            Notiflix.Notify.failure('Not changed', currentNotifyOptions); 
+            Notiflix.Notify.failure('Not changed', notifyOptions.currentOptions); 
             cell.restoreOldValue();
         }
         else 
         {
-            Notiflix.Notify.success('Cell changed', currentNotifyOptions);
+            Notiflix.Notify.success('Cell changed', notifyOptions.currentOptions);
         }
     });
 
@@ -36,17 +35,17 @@ export async function show()
             response = await window.api.getTag(response[0]);
             if(response == 0) 
             {
-                Notiflix.Notify.failure('Not added', currentNotifyOptions); 
+                Notiflix.Notify.failure('Not added', notifyOptions.currentOptions); 
             }
             else 
             {
-                Notiflix.Notify.success('Row added', currentNotifyOptions);
+                Notiflix.Notify.success('Row added', notifyOptions.currentOptions);
                 tagsTable.addData([response[0]], false);
             }
         }
         else
         {
-            Notiflix.Notify.failure('Not added', currentNotifyOptions); 
+            Notiflix.Notify.failure('Not added', notifyOptions.currentOptions); 
         }
     }
 
@@ -62,11 +61,11 @@ export async function show()
                 var response = await window.api.deleteTag(row.getData().id)
                 if(response == 0) 
                 {
-                    Notiflix.Notify.failure('Not deleted', currentNotifyOptions); 
+                    Notiflix.Notify.failure('Not deleted', notifyOptions.currentOptions); 
                 }
                 else 
                 {
-                    Notiflix.Notify.success('Row deleted', currentNotifyOptions);
+                    Notiflix.Notify.success('Row deleted', notifyOptions.currentOptions);
                     row.delete();
                 }
             },

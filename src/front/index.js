@@ -76,7 +76,7 @@ var form = document.querySelector("form")
 var input = document.querySelector("input")
 var responses = document.querySelector("#responses")
 
-document.getElementById('notify').onclick = async () => {Notiflix.Notify.success("Notification", await notifyOptions.loadNotifyOptions())}
+document.getElementById('notify').onclick = async () => {Notiflix.Notify.success("Notification", notifyOptions.currentOptions)}
 
 form.addEventListener
 (

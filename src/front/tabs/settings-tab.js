@@ -38,7 +38,7 @@ export async function show()
         settingsTextarea.value = JSON.stringify({'notifyOptions' : notifyOptions.defaultOptions});
         settingsJSON = JSON.parse(settingsTextarea.value);
         await window.api.writeSettings(JSON.stringify(settingsJSON));
-        Notiflix.Notify.success("Loaded default settings", await(notifyOptions.loadNotifyOptions()));
+        Notiflix.Notify.success("Loaded default settings", notifyOptions.currentOptions);
     }
 
     setSettingsSelectors(settingsJSON);
@@ -64,7 +64,8 @@ export async function show()
         settingsJSON['notifyOptions']['timeout'] = +notificationTimeoutInput.value;
         settingsJSON['notifyOptions']['position'] = notificationPositionSelect.value;
         await window.api.writeSettings(JSON.stringify(settingsJSON));
-        Notiflix.Notify.success('Settings saved', await(notifyOptions.loadNotifyOptions()));
+        await notifyOptions.reloadNotifyOptions();
+        Notiflix.Notify.success('Settings saved', notifyOptions.currentOptions);
     }
 
 }

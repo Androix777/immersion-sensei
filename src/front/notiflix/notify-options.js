@@ -4,7 +4,18 @@ export var defaultOptions =
     position: "right-bottom",
 }
 
-export async function loadNotifyOptions()
+export var currentOptions;
+try
 {
-    return JSON.parse(await window.api.readSettings())['notifyOptions'];
+    await reloadNotifyOptions();
+}
+catch (e)
+{
+    console.error('Notify options not found: ' + e);
+    currentOptions = defaultOptions;
+}
+
+export async function reloadNotifyOptions()
+{
+    currentOptions = JSON.parse(await window.api.readSettings())['notifyOptions'];
 }

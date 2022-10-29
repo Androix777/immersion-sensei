@@ -1,6 +1,5 @@
 import * as notifyOptions from '../notiflix/notify-options.js'
 
-var currentNotifyOptions = notifyOptions.defaultOptions;
 var toCleanUp = []
 
 var importTab = undefined;
@@ -45,13 +44,13 @@ export async function show()
         catch(exception)
         {
             console.error(exception);
-            Notiflix.Notify.failure('Failed to open file', currentNotifyOptions);
+            Notiflix.Notify.failure('Failed to open file', notifyOptions.currentOptions);
             return;
         }
         
         if(data.columns.length < 2)
         {
-            Notiflix.Notify.failure('Not enough columns in CSV', currentNotifyOptions);
+            Notiflix.Notify.failure('Not enough columns in CSV', notifyOptions.currentOptions);
             return;
         }
 
@@ -76,7 +75,7 @@ export async function show()
         catch(exception)
         {
             console.error(exception);
-            Notiflix.Notify.failure('Failed to load data', currentNotifyOptions);
+            Notiflix.Notify.failure('Failed to load data', notifyOptions.currentOptions);
             return;
         }
 
@@ -92,7 +91,7 @@ export async function show()
     importButton.onclick = async () =>
     {
         await importData(dataDict);
-        Notiflix.Notify.success('Import complete', currentNotifyOptions);
+        Notiflix.Notify.success('Import complete', notifyOptions.currentOptions);
 
         importButton.disabled = true;
         loadButton.disabled = true;
