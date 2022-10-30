@@ -112,11 +112,11 @@ export async function show()
 
     async function onImmersionTextClick(e, cell)
     {
-        var immersionTextWindow = new ImmersionTextWindow()
+        var immersionTextWindow = await new ImmersionTextWindow();
 
         if(!cell.getValue())
         {
-            (await immersionTextWindow.init('No immersion text for immersion ' + cell.getData().id)).show();
+            immersionTextWindow.show();
             immersionTextWindow.on('acceptButtonClick', async () =>
             {
                 var newID = await window.api.addImmersionText(immersionTextWindow.immersionText);
@@ -135,7 +135,8 @@ export async function show()
         }
         else
         {
-            (await immersionTextWindow.init((await window.api.getImmersionText(cell.getData().text_of_immersion_id))[0]['text'])).show();
+            immersionTextWindow.immersionText = (await window.api.getImmersionText(cell.getData().text_of_immersion_id))[0]['text'];
+            immersionTextWindow.show();
             immersionTextWindow.on('acceptButtonClick', async () =>
             {
                 var response = await window.api.changeImmersionText(cell.getData().text_of_immersion_id, immersionTextWindow.immersionText);

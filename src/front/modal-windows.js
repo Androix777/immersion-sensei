@@ -2,23 +2,22 @@ export class ModalWindow
 {
     constructor()
     {
-        this.modalBackground = document.createElement('div');
-        this.modalBackground.classList.add('modal-background');
-        
-        this.modalContent = document.createElement('div');
-        this.modalContent.classList.add('modal-content');
+        return new Promise(function (resolve, reject) 
+        {
+            this.modalBackground = document.createElement('div');
+            this.modalBackground.classList.add('modal-background');
+            
+            this.modalContent = document.createElement('div');
+            this.modalContent.classList.add('modal-content');
 
-        this.modalBackground.appendChild(this.modalContent);        
-        document.body.appendChild(this.modalBackground);
+            this.modalBackground.appendChild(this.modalContent);        
+            document.body.appendChild(this.modalBackground);
 
-        this.on('modalBackgroundMouseDown', () => { this.destroy(); });
-        this.on('modalContentMouseDown', (event) => { event.stopPropagation(); });
-    }
+            this.on('modalBackgroundMouseDown', () => { this.destroy(); });
+            this.on('modalContentMouseDown', (event) => { event.stopPropagation(); });
 
-    async init(HTMLPath)
-    {
-        await loadInnerHTML(HTMLPath, this.modalContent);
-        return this;
+            resolve(this);
+        }.bind(this));
     }
 
     show()
@@ -57,25 +56,25 @@ export class ImmersionTextWindow extends ModalWindow
 {
     constructor()
     {
-        super();
-    }
+        var parent = super();
+        return new Promise(async function (resolve, reject) 
+        {
+            var properties = await parent;
+            
+            await loadInnerHTML('./immersion-text.html', properties.modalContent);
 
-    async init(immersionText)
-    {
-        await loadInnerHTML('./immersion-text.html', this.modalContent);
+            properties.immersionTextarea = document.getElementById('immersion-textarea');
+            properties.immersionTextarea.placeholder = 'Immersion text here...';
+            properties.acceptButton = document.getElementById('accept-button');
+            properties.deleteButton = document.getElementById('delete-button');
+            properties.cancelButton = document.getElementById('cancel-button');
 
-        this.immersionTextarea = document.getElementById('immersion-textarea');
-        this.acceptButton = document.getElementById('accept-button');
-        this.deleteButton = document.getElementById('delete-button');
-        this.cancelButton = document.getElementById('cancel-button');
+            properties.acceptButton.disabled = true;
+            properties.deleteButton.disabled = true;
+            properties.cancelButton.disabled = true;
 
-        this.acceptButton.disabled = true;
-        this.deleteButton.disabled = true;
-        this.cancelButton.disabled = true;
-
-        this.immersionTextarea.value = immersionText;
-
-        return this;
+            resolve(this);
+        }.bind(parent));
     }
 
     on(eventName, callback)
@@ -103,6 +102,11 @@ export class ImmersionTextWindow extends ModalWindow
     get immersionText()
     {
         return this.immersionTextarea.value;
+    }
+
+    set immersionText(immersionText)
+    {
+        this.immersionTextarea.value = immersionText;
     }
 }
 
