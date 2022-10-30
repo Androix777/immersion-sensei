@@ -16,7 +16,6 @@ export async function show()
 
     exportButton.onclick = async () =>
     {
-        collectExportData();
         var data = await collectExportData();
         data = arrayToCSV(data, 'path');
         saveFile('export.csv', data, 'text/csv');
@@ -86,6 +85,7 @@ function saveFile(name, content, type)
     link.href = URL.createObjectURL(new Blob([content], {type: type}));
     link.download = name;
     link.click();
+    link.remove();
 }
 
 function arrayToCSV(data)
