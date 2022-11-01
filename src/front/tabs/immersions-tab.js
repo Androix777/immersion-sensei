@@ -1,5 +1,5 @@
 import {createImmersionsTable} from '../tables/immersions-table.js'
-import * as notifyOptions from '../notiflix/notify-options.js'
+import { Settings } from '../global-settings.js';
 import { ImmersionTextWindow } from '../modal-windows.js';
 
 var immersionsTable = undefined;
@@ -55,12 +55,12 @@ export async function show()
         // response == 0 might mean "deleted 0 records" or "inserted 0 records"
         if(response == 0) 
         {
-            Notiflix.Notify.failure('Not changed', notifyOptions.currentOptions); 
+            Notiflix.Notify.failure('Not changed', Settings.currentSettings.notifyOptions); 
             cell.restoreOldValue();
         }
         else 
         {
-            Notiflix.Notify.success('Cell changed', notifyOptions.currentOptions);
+            Notiflix.Notify.success('Cell changed', Settings.currentSettings.notifyOptions);
         }
     });
 
@@ -72,17 +72,17 @@ export async function show()
             response = await window.api.getImmersion(response[0]);
             if(response == 0) 
             {
-                Notiflix.Notify.failure('Not added', notifyOptions.currentOptions); 
+                Notiflix.Notify.failure('Not added', Settings.currentSettings.notifyOptions); 
             }
             else 
             {
-                Notiflix.Notify.success('Row added', notifyOptions.currentOptions);
+                Notiflix.Notify.success('Row added', Settings.currentSettings.notifyOptions);
                 immersionsTable.addData([response[0]], false);
             }
         }
         else
         {
-            Notiflix.Notify.failure('Not added', notifyOptions.currentOptions); 
+            Notiflix.Notify.failure('Not added', Settings.currentSettings.notifyOptions); 
         }
     }
 
@@ -98,11 +98,11 @@ export async function show()
                 var response = await window.api.deleteImmersion(row._row.data.id)
                 if(response == 0) 
                 {
-                    Notiflix.Notify.failure('Not deleted', notifyOptions.currentOptions); 
+                    Notiflix.Notify.failure('Not deleted', Settings.currentSettings.notifyOptions); 
                 }
                 else 
                 {
-                    Notiflix.Notify.success('Row deleted', notifyOptions.currentOptions);
+                    Notiflix.Notify.success('Row deleted', Settings.currentSettings.notifyOptions);
                     row.delete();
                 }
             },
@@ -125,7 +125,7 @@ export async function show()
                     var response = await window.api.changeImmersion(cell.getData().id, 'text_of_immersion_id', newID[0]);
                     if(response)
                     {
-                        Notiflix.Notify.success('Immersion text added', notifyOptions.currentOptions);
+                        Notiflix.Notify.success('Immersion text added', Settings.currentSettings.notifyOptions);
                         cell.setValue(newID);
                     }
                 }
@@ -142,7 +142,7 @@ export async function show()
                 var response = await window.api.changeImmersionText(cell.getData().text_of_immersion_id, immersionTextWindow.immersionText);
                 if(response)
                 {
-                    Notiflix.Notify.success('Immersion text changed', notifyOptions.currentOptions);
+                    Notiflix.Notify.success('Immersion text changed', Settings.currentSettings.notifyOptions);
                 }
                 immersionTextWindow.destroy();
             });
@@ -152,7 +152,7 @@ export async function show()
                 var response = await window.api.deleteImmersionText(cell.getValue());
                 if(response)
                 {
-                    Notiflix.Notify.success('Immersion text deleted', notifyOptions.currentOptions);
+                    Notiflix.Notify.success('Immersion text deleted', Settings.currentSettings.notifyOptions);
                     cell.setValue(null);
                 }
                 immersionTextWindow.destroy();

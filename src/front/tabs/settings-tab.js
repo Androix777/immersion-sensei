@@ -1,4 +1,4 @@
-import * as notifyOptions from '../notiflix/notify-options.js'
+import { Settings } from '../global-settings.js';
 
 var toCleanUp = []
 
@@ -26,22 +26,10 @@ function getElements()
 export async function show()
 {
     getElements();
-
-    var settingsJSON = await loadSettings();
-
-    if(Object.keys(settingsJSON).length)
-    {
-        settingsTextarea.value = JSON.stringify(settingsJSON);
-    }
-    else
-    {
-        settingsTextarea.value = JSON.stringify({'notifyOptions' : notifyOptions.defaultOptions});
-        settingsJSON = JSON.parse(settingsTextarea.value);
-        await window.api.writeSettings(JSON.stringify(settingsJSON));
-        Notiflix.Notify.success("Loaded default settings", notifyOptions.currentOptions);
-    }
-
-    setSettingsSelectors(settingsJSON);
+    
+    
+    settingsTextarea.value = JSON.stringify(Settings.currentSettings);
+    setSettingsSelectors(Settings.currentSettings);
     
     readButton.onclick = async () =>
     {
@@ -56,16 +44,16 @@ export async function show()
 
     settingsCancelButton.onclick = () =>
     {
-        setSettingsSelectors(settingsJSON);
+        setSettingsSelectors(Settings.currentSettings);
     }
 
     settingsSaveButton.onclick = async () =>
     {
-        settingsJSON['notifyOptions']['timeout'] = +notificationTimeoutInput.value;
-        settingsJSON['notifyOptions']['position'] = notificationPositionSelect.value;
-        await window.api.writeSettings(JSON.stringify(settingsJSON));
-        await notifyOptions.reloadNotifyOptions();
-        Notiflix.Notify.success('Settings saved', notifyOptions.currentOptions);
+        var newSettings = Settings.currentSettings;
+        newSettings['notifyOptions']['timeout'] = +notificationTimeoutInput.value;
+        newSettings['notifyOptions']['position'] = notificationPositionSelect.value;
+        await Settings.changeSettings(newSettings);
+        Notiflix.Notify.success('Settings saved', Settings.currentSettings.notifyOptions);
     }
 
 }
@@ -76,20 +64,6 @@ function setSettingsSelectors(settingsJSON)
     notificationPositionSelect.value = settingsJSON['notifyOptions']['position'];
 }
 
-async function loadSettings()
-{
-    var settingsText = await window.api.readSettings();
-    try
-    {
-        return JSON.parse(settingsText);
-    }
-    catch (e)
-    {
-        console.error('Failed to parse settings: ' + e);
-        return {};
-    }
-}
-
 export function hide()
 {
     getElements();
@@ -97,5 +71,5 @@ export function hide()
     toCleanUp.forEach((element) =>
     {
         element.remove();
-    })
+    });
 }

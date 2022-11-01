@@ -72,13 +72,13 @@ function selectTab(id)
 
 // Debug
 
-import * as notifyOptions from '../front/notiflix/notify-options.js'
+import { Settings } from './global-settings.js';
 
 var form = document.querySelector("form")
 var input = document.querySelector("input")
 var responses = document.querySelector("#responses")
 
-document.getElementById('notify').onclick = async () => {Notiflix.Notify.success("Notification", notifyOptions.currentOptions)}
+document.getElementById('notify').onclick = async () => {Notiflix.Notify.success("Notification", Settings.currentSettings.notifyOptions)}
 
 form.addEventListener
 (

@@ -1,5 +1,5 @@
 import {createWorkTypesTable} from '../tables/work-types-table.js'
-import * as notifyOptions from '../notiflix/notify-options.js'
+import { Settings } from '../global-settings.js';
 
 var workTypesTable = undefined;
 
@@ -18,12 +18,12 @@ export async function show()
 
         if(response == 0) 
         {
-            Notiflix.Notify.failure('Not changed', notifyOptions.currentOptions); 
+            Notiflix.Notify.failure('Not changed', Settings.currentSettings.notifyOptions); 
             cell.restoreOldValue();
         }
         else 
         {
-            Notiflix.Notify.success('Cell changed', notifyOptions.currentOptions);
+            Notiflix.Notify.success('Cell changed', Settings.currentSettings.notifyOptions);
         }
     });
 
@@ -35,17 +35,17 @@ export async function show()
             response = await window.api.getWorkType(response[0]);
             if(response == 0) 
             {
-                Notiflix.Notify.failure('Not added', notifyOptions.currentOptions); 
+                Notiflix.Notify.failure('Not added', Settings.currentSettings.notifyOptions); 
             }
             else 
             {
-                Notiflix.Notify.success('Row added', notifyOptions.currentOptions);
+                Notiflix.Notify.success('Row added', Settings.currentSettings.notifyOptions);
                 workTypesTable.addData([response[0]], false);
             }
         }
         else
         {
-            Notiflix.Notify.failure('Not added', notifyOptions.currentOptions); 
+            Notiflix.Notify.failure('Not added', Settings.currentSettings.notifyOptions); 
         }
     }
 
@@ -61,11 +61,11 @@ export async function show()
                 var response = await window.api.deleteWorkType(row.getData().id)
                 if(response == 0) 
                 {
-                    Notiflix.Notify.failure('Not deleted', notifyOptions.currentOptions); 
+                    Notiflix.Notify.failure('Not deleted', Settings.currentSettings.notifyOptions); 
                 }
                 else 
                 {
-                    Notiflix.Notify.success('Row deleted', notifyOptions.currentOptions);
+                    Notiflix.Notify.success('Row deleted', Settings.currentSettings.notifyOptions);
                     row.delete();
                 }
             },

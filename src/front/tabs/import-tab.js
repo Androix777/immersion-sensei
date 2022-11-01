@@ -1,4 +1,4 @@
-import * as notifyOptions from '../notiflix/notify-options.js'
+import { Settings } from '../global-settings.js';
 
 var toCleanUp = []
 
@@ -44,13 +44,13 @@ export async function show()
         catch(exception)
         {
             console.error(exception);
-            Notiflix.Notify.failure('Failed to open file', notifyOptions.currentOptions);
+            Notiflix.Notify.failure('Failed to open file', Settings.currentSettings.notifyOptions);
             return;
         }
         
         if(data.columns.length < 2)
         {
-            Notiflix.Notify.failure('Not enough columns in CSV', notifyOptions.currentOptions);
+            Notiflix.Notify.failure('Not enough columns in CSV', Settings.currentSettings.notifyOptions);
             return;
         }
 
@@ -75,7 +75,7 @@ export async function show()
         catch(exception)
         {
             console.error(exception);
-            Notiflix.Notify.failure('Failed to load data', notifyOptions.currentOptions);
+            Notiflix.Notify.failure('Failed to load data', Settings.currentSettings.notifyOptions);
             return;
         }
 
@@ -91,7 +91,7 @@ export async function show()
     importButton.onclick = async () =>
     {
         await importData(dataDict);
-        Notiflix.Notify.success('Import complete', notifyOptions.currentOptions);
+        Notiflix.Notify.success('Import complete', Settings.currentSettings.notifyOptions);
 
         importButton.disabled = true;
         loadButton.disabled = true;

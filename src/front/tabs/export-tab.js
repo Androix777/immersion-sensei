@@ -1,4 +1,4 @@
-import * as notifyOptions from '../notiflix/notify-options.js'
+import { Settings } from '../global-settings.js'
 import { Duration } from "../../../node_modules/luxon/build/es6/luxon.js";
 
 var toCleanUp = []
@@ -19,7 +19,7 @@ export async function show()
         var data = await collectExportData();
         data = arrayToCSV(data, 'path');
         saveFile('export.csv', data, 'text/csv');
-        Notiflix.Notify.success('Export complete', notifyOptions.currentOptions);
+        Notiflix.Notify.success('Export complete', Settings.currentSettings.notifyOptions);
     }   
 }
 
