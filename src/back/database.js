@@ -26,7 +26,7 @@ class database
 
     static async createAndConnect()
     {
-        fs.copyFile(path.join(database.rootPath, database.defaultTemplatePath), database.path.join(database.rootPath, database.defaultDBPath), 
+        fs.copyFile(path.join(database.rootPath, database.defaultTemplatePath), path.join(database.rootPath, database.defaultDBPath), 
             (err) => { if (err) throw err; });
         
         database.connect();
